@@ -13,14 +13,11 @@ type authRepository struct {
 }
 
 func (r *authRepository) GetPassword(username string) (*app.Accounts, error) {
-	r.db = r.db.Table("accounts")
-
 	record := new(app.Accounts)
 	return record, r.db.Where("username = ?", username).First(record).Error
 }
 
 func (r *authRepository) GetRole(userID string) (string, error) {
-
 	// check if the role is a ssigned
 	var userRole authority.UserRole
 	res := r.db.Where("user_id = ?", userID).First(&userRole)

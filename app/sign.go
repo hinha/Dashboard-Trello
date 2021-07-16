@@ -17,6 +17,7 @@ type AuthRepository interface {
 
 type Accounts struct {
 	ID             string    `json:"id" gorm:"type:varchar(50);primaryKey"`
+	Name           string    `json:"username" gorm:"type:varchar(50);not null"`
 	Username       string    `json:"username" gorm:"type:varchar(24);not null"`
 	Password       string    `json:"-" gorm:"type:text;not null"`
 	SecretPassword string    `json:"-" gorm:"type:text;not null"`
@@ -58,7 +59,7 @@ func (m *LoginInput) GenerateJwt(data map[string]interface{}) (string, error) {
 	for k, v := range data {
 		claims[k] = v
 	}
-	claims["exp"] = time.Now().Add(time.Hour * 5).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }

@@ -36,6 +36,13 @@ var rootCmd = &cobra.Command{
 const defaultPort = "8080"
 
 func main() {
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		panic(err)
+	}
+	// handle err
+	time.Local = loc
+
 	var (
 		appSecret = envString("APP_SECRET", "secret")
 		dbUser    = envString("DB_USER", "user")

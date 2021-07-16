@@ -37,19 +37,16 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 	r.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("APP_SECRET")))))
 	{
 		account := accountHandler{s: s.Account}
-		g := r.Group("/accounts")
+		g := r.Group("/accounts", account.restricted)
 		g.GET("/login", account.loginPage)
 		g.POST("/login", account.loginPerform)
 	}
 	{
-		account := accountHandler{}
-		g := r.Group("/accounts")
-		g.GET("/login2", account.loginPage)
-	}
-	{
-		g := r.Group("/dashboard")
+		dashboard := dashboardHandler{s: s.Account}
+		g := r.Group("/dashboard", dashboard.restricted)
 		g.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-			SigningKey: []byte(os.Getenv("JWT_SECRET")),
+			SigningKey:  []byte(os.Getenv("JWT_SECRET")),
+			TokenLookup: "cookie:token",
 			ErrorHandlerWithContext: func(err error, c echo.Context) error {
 				if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
 					return c.Redirect(http.StatusPermanentRedirect, "/accounts/login")
@@ -57,14 +54,7 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 				return nil
 			},
 		}))
-		g.GET("/home", func(ctx echo.Context) error {
-			return ctx.Render(http.StatusOK, "index.html", nil)
-		}, func(handlerFunc echo.HandlerFunc) echo.HandlerFunc {
-			return func(c echo.Context) error {
-				fmt.Println(c.Response().Status)
-				return handlerFunc(c)
-			}
-		})
+		g.GET("", dashboard.dashboardPage)
 	}
 
 	r.GET("/", func(ctx echo.Context) error {

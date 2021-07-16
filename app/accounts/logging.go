@@ -12,7 +12,7 @@ type loggingService struct {
 	next   Service
 }
 
-func (s *loggingService) AuthLogin(ctx context.Context, in *app.LoginInput) (token string, err error) {
+func (s *loggingService) AuthLogin(ctx context.Context, in *app.LoginInput) (o *app.Accounts, token string, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
 			"method":   "authenticate",
