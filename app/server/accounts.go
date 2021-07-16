@@ -1,14 +1,16 @@
 package server
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/gorilla/sessions"
-	"github.com/hinha/PAM-Trello/app"
-	"github.com/hinha/PAM-Trello/app/accounts"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"time"
+
+	"github.com/hinha/PAM-Trello/app"
+	"github.com/hinha/PAM-Trello/app/accounts"
 )
 
 type accountHandler struct {
@@ -67,6 +69,10 @@ func (h *accountHandler) loginPerform(ctx echo.Context) error {
 	return ctx.Redirect(http.StatusFound, "/dashboard")
 }
 
+func (h *accountHandler) refreshToken(ctx echo.Context) error {
+	return ctx.JSON(http.StatusOK, map[string]interface{}{})
+}
+
 func (h *accountHandler) writeCookie(c echo.Context, key string, value string) {
 	cookie := new(http.Cookie)
 	cookie.Name = key
@@ -105,17 +111,13 @@ func (h *dashboardHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		_, err := ctx.Cookie("session")
 		if err != nil {
-			cookie := new(http.Cookie)
-			cookie.Name = "token"
-			cookie.Value = ""
-			cookie.Path = "/"
-			cookie.Expires = time.Now().Add(0)
-			ctx.SetCookie(cookie)
+			ctx.SetCookie(app.DeleteCookie)
 			return ctx.Redirect(http.StatusFound, "/accounts/login")
 		}
 
 		sess, err := session.Get("session", ctx)
 		if err != nil {
+			ctx.SetCookie(app.DeleteCookie)
 			return ctx.Redirect(http.StatusFound, "/accounts/login")
 		}
 

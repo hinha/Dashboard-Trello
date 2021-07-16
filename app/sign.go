@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 type AuthRepository interface {
 	GetPassword(username string) (*Accounts, error)
 	GetRole(userID string) (string, error)
+	UpdateLogin(userID string) error
 }
 
 type Accounts struct {
@@ -71,3 +73,10 @@ const (
 	PermUserUpdatePassword = "update password expiration policies"
 	PermServiceRequest     = "manage service requests"
 )
+
+var DeleteCookie = &http.Cookie{
+	Name:    "token",
+	Value:   "",
+	Path:    "/",
+	Expires: time.Now().Add(0),
+}

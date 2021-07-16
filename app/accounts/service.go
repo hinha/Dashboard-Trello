@@ -3,6 +3,7 @@ package accounts
 import (
 	"context"
 	"fmt"
+
 	"github.com/hinha/PAM-Trello/app"
 )
 
@@ -38,6 +39,8 @@ func (s *service) AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accou
 	if err != nil {
 		return nil, "", fmt.Errorf("service unavailable")
 	}
+
+	_ = s.auth.UpdateLogin(account.ID)
 
 	return account, token, nil
 }

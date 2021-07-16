@@ -1,9 +1,12 @@
 package repository
 
 import (
+	"time"
+
+	"gorm.io/gorm"
+
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/util/authority"
-	"gorm.io/gorm"
 )
 
 type authRepository struct {
@@ -32,6 +35,10 @@ func (r *authRepository) GetRole(userID string) (string, error) {
 	}
 
 	return role.Name, nil
+}
+
+func (r *authRepository) UpdateLogin(userID string) error {
+	return r.db.Table("accounts").Where("id=?", userID).Updates(app.Accounts{LastLogin: time.Now()}).Error
 }
 
 func NewAuthRepository(db *gorm.DB) app.AuthRepository {
