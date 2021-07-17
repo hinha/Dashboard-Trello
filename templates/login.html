@@ -84,18 +84,7 @@
             <!-- /.login-card-body -->
         </div>
     </div>
-<script>
-    function myFunction(form,result){
-        var ch = document.getElementById(result)
-        var formname = form.name;
-        if(ch.checked == true){
-            document[formname].action="/up_dags/"+result
-        }
-        else if(ch.checked == false){
-            document[formname].action="/p_dags/"+result
-        }
-    }
-</script>
+
 <script src="../plugins/jquery/jquery.min.js"></script>
 <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
