@@ -67,7 +67,7 @@ func main() {
 			// TODO: Need refactor
 
 			// initiate authority
-			db.AutoMigrate(&app.Accounts{})
+			db.AutoMigrate(&app.Accounts{}, &app.AccountDetail{})
 
 			password := []byte(fmt.Sprintf("%s:%s", appSecret, "admin"))
 			// Hashing the password with the default cost of 10

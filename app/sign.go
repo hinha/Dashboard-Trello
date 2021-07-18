@@ -23,9 +23,12 @@ type Accounts struct {
 	Username       string    `json:"username" gorm:"type:varchar(24);not null"`
 	Password       string    `json:"-" gorm:"type:text;not null"`
 	SecretPassword string    `json:"-" gorm:"type:text;not null"`
+	OnlineStatus   bool      `json:"online_status" gorm:"default:false"`
+	SuspendStatus  bool      `json:"suspend_status" gorm:"default:false"`
 	CreatedAt      time.Time `json:"created_at" gorm:"not null;"`
-	LastLogin      time.Time `json:"last_login" gorm:"not null;"`
-	//RoleID string `gorm:"-"`
+	UpdatedAt      time.Time
+	LastLogin      time.Time     `json:"last_login" gorm:"not null;"`
+	Accounts       AccountDetail `json:"accounts" gorm:"ForeignKey:AccountID"`
 }
 
 type LoginInput struct {
