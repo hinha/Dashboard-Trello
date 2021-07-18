@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gorilla/sessions"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -96,15 +97,58 @@ func (h *accountHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 type dashboardHandler struct {
 	s accounts.Service
 
+	hub    *Hub
 	logger *log.Entry
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 func (h *dashboardHandler) dashboardPage(ctx echo.Context) error {
 	data := &app.DashboardContent{
 		User: ctx.Get("context"),
+		Any:  make(map[string]string),
+		Page: make(map[string]int),
 	}
 
+	data.Any["Location"] = "/token/refresh"
+	data.Page["Menu"] = int(app.HomeMenu)
+
 	return ctx.Render(http.StatusOK, "dashboard.html", data)
+}
+
+func (h *dashboardHandler) boardTrelloPage(ctx echo.Context) error {
+	data := &app.DashboardContent{
+		User: ctx.Get("context"),
+		Any:  make(map[string]string),
+		Page: make(map[string]int),
+	}
+
+	data.Any["Location"] = "/token/refresh"
+	data.Page["Menu"] = int(app.TrelloMenu)
+	//fmt.Println(data)
+
+	return ctx.Render(http.StatusOK, "dashboard.html", data)
+}
+
+func (h *dashboardHandler) engine(ctx echo.Context) error {
+	get := ctx.Get("context")
+	username := get.(map[interface{}]interface{})["username"].(string)
+	name := get.(map[interface{}]interface{})["name"].(string)
+	userID := get.(map[interface{}]interface{})["user_id"].(string)
+
+	// Upgrading the HTTP connection socket connection
+	connection, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
+	if err != nil {
+		h.logger.Error(err)
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	CreateNewSocketUser(h.hub, connection, userID, username, name)
+
+	return nil
 }
 
 func (h *dashboardHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {

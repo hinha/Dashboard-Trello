@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/css/adminlte.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini">
 
@@ -25,14 +30,12 @@
 
         {{template "main.left_bar" . }}
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            {{ if eq .Page.Menu 0 }}
-                {{template "content.home" . }}
-            {{end}}
-            {{ if eq .Page.Menu 1 }}
-                {{template "content.board" . }}
-            {{end}}
-        </div>
+        {{ if eq .Page.Menu 0 }}
+            {{template "content.home" . }}
+        {{end}}
+        {{ if eq .Page.Menu 1 }}
+            {{template "content.board" . }}
+        {{end}}
         <!-- /.content-wrapper -->
 
         <!-- Control Sidebar -->
@@ -56,6 +59,8 @@
         </footer>
     </div>
 </div>
+
+<script src="/js/script.js" type="text/babel"></script>
 <script src="/plugins/jquery/jquery.min.js"></script>
 <script>
     const current = location.pathname;

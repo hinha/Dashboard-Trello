@@ -19,7 +19,7 @@ type AuthRepository interface {
 
 type Accounts struct {
 	ID             string    `json:"id" gorm:"type:varchar(50);primaryKey"`
-	Name           string    `json:"username" gorm:"type:varchar(50);not null"`
+	Name           string    `json:"name" gorm:"type:varchar(50);not null"`
 	Username       string    `json:"username" gorm:"type:varchar(24);not null"`
 	Password       string    `json:"-" gorm:"type:text;not null"`
 	SecretPassword string    `json:"-" gorm:"type:text;not null"`

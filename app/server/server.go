@@ -38,10 +38,7 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 	r.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("APP_SECRET")))))
 	{
 		account := accountHandler{s: s.Account}
-		g := r.Group("/accounts", account.restricted)
-		g.GET("/login", account.loginPage)
-		g.POST("/login", account.loginPerform)
-		g.POST("/token/refresh", account.refreshToken, s.jwtConfig(func(err error, c echo.Context) error {
+		r.POST("/token/refresh", account.refreshToken, s.jwtConfig(func(err error, c echo.Context) error {
 			output := c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
 			if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
 				c.SetCookie(app.DeleteCookie)
@@ -53,9 +50,14 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 			}
 			return nil
 		}))
+		g := r.Group("/accounts", account.restricted)
+		g.GET("/login", account.loginPage)
+		g.POST("/login", account.loginPerform)
 	}
 	{
-		dashboard := dashboardHandler{s: s.Account}
+		hub := NewHub()
+		go hub.Run()
+		dashboard := dashboardHandler{s: s.Account, logger: s.Logger, hub: hub}
 		g := r.Group("/dashboard", dashboard.restricted)
 		g.Use(s.jwtConfig(func(err error, c echo.Context) error {
 
@@ -70,6 +72,8 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 			return nil
 		}))
 		g.GET("", dashboard.dashboardPage)
+		g.GET("/ws", dashboard.engine)
+		g.GET("/board/trello", dashboard.boardTrelloPage)
 	}
 
 	r.GET("/", func(ctx echo.Context) error {
