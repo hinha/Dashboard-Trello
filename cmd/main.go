@@ -116,8 +116,11 @@ func main() {
 		Example: "start",
 		Run: func(cmd *cobra.Command, args []string) {
 			// Setup repository
-			var ar app.AuthRepository
-			ar = repository.NewAuthRepository(db)
+			var authRepo app.AuthRepository
+			authRepo = repository.NewAuthRepository(db)
+
+			var accountRepo app.AccountRepository
+			accountRepo = repository.NewAccountRepository(db)
 
 			logger := log.New()
 			logger.Formatter = new(log.TextFormatter)
@@ -127,7 +130,7 @@ func main() {
 			logger.WithField("ts", logger.WithTime(time.Now()))
 
 			var as accounts.Service
-			as = accounts.NewService(ar)
+			as = accounts.NewService(authRepo, accountRepo)
 			as = accounts.NewLoggingService(logger.WithField("component", "accounts"), as)
 
 			srv := server.New(as, logger.WithField("component", "http"))

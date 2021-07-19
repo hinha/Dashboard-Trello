@@ -23,6 +23,7 @@ type Accounts struct {
 	Username       string    `json:"username" gorm:"type:varchar(24);not null"`
 	Password       string    `json:"-" gorm:"type:text;not null"`
 	SecretPassword string    `json:"-" gorm:"type:text;not null"`
+	Email          string    `json:"email" gorm:"type:varchar(80);not null"`
 	OnlineStatus   bool      `json:"online_status" gorm:"default:false"`
 	SuspendStatus  bool      `json:"suspend_status" gorm:"default:false"`
 	CreatedAt      time.Time `json:"created_at" gorm:"not null;"`
@@ -35,6 +36,7 @@ type LoginInput struct {
 	Username string
 	Password string
 	Errors   map[string]string
+	Token    string
 }
 
 func (m *LoginInput) Validate() bool {

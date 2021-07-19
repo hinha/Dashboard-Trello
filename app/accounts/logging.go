@@ -25,6 +25,36 @@ func (s *loggingService) AuthLogin(ctx context.Context, in *app.LoginInput) (o *
 	return s.next.AuthLogin(ctx, in)
 }
 
+func (s *loggingService) NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) (err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":        "register",
+			"took":          time.Since(begin),
+			"admin_id":      adminID,
+			"authorize":     roleName,
+			"register_name": in.Name,
+			"err":           err,
+		}).Info("NewAccount")
+	}(time.Now())
+
+	return s.next.NewAccount(ctx, adminID, roleName, in)
+}
+
+func (s *loggingService) ListAccount(ctx context.Context, adminID string, roleName string) (o []app.Accounts, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":     "register",
+			"took":       time.Since(begin),
+			"admin_id":   adminID,
+			"authorize":  roleName,
+			"count_data": len(o),
+			"err":        err,
+		}).Info("NewAccount")
+	}(time.Now())
+
+	return s.next.ListAccount(ctx, adminID, roleName)
+}
+
 // NewLoggingService returns a new instance of a logging Service.
 func NewLoggingService(logger *logrus.Entry, s Service) Service {
 	return &loggingService{logger, s}

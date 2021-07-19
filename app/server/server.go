@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"os"
 
@@ -33,26 +34,36 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 	}
 
 	r := echo.New()
+	echo.NotFoundHandler = func(c echo.Context) error {
+		return c.Render(http.StatusNotFound, "404.html", nil)
+	}
+	r.HTTPErrorHandler = func(err error, c echo.Context) {
+		code := http.StatusInternalServerError
+		if he, ok := err.(*echo.HTTPError); ok {
+			code = he.Code
+		}
+		errorPage := fmt.Sprintf("%d.html", code)
+		if err := c.File(errorPage); err != nil {
+			c.Logger().Error(err)
+		}
+		c.Logger().Error(err)
+	}
+	csrfForm := middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup: "form:csrf",
+	})
+	csrfHeader := middleware.CSRF()
+
 	r.Static("/", "static")
 	r.Renderer = templateRenderer("templates/*.html", true)
 	r.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("APP_SECRET")))))
 	{
 		account := accountHandler{s: s.Account}
-		r.POST("/token/refresh", account.refreshToken, s.jwtConfig(func(err error, c echo.Context) error {
-			output := c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
-			if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
-				c.SetCookie(app.DeleteCookie)
-				return output
-			}
-			if err.Error() == "Token is expired" || err.Error() == "signature is invalid" {
-				c.SetCookie(app.DeleteCookie)
-				return output
-			}
-			return nil
-		}))
-		g := r.Group("/accounts", account.restricted)
-		g.GET("/login", account.loginPage)
-		g.POST("/login", account.loginPerform)
+		r.POST("/token/refresh", account.refreshToken, s.jwtConfig(fallback))
+		g := r.Group("/accounts")
+		g.GET("/login", account.loginPage, csrfForm, account.restricted)
+		g.POST("/login", account.loginPerform, csrfForm, account.restricted)
+		g.POST("/setting/new", account.registerAccount, s.jwtConfig(fallback), getToken)
+		g.POST("/setting/list", account.accountTable, s.jwtConfig(fallback), getToken)
 	}
 	{
 		hub := NewHub()
@@ -71,9 +82,12 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 			}
 			return nil
 		}))
+
 		g.GET("", dashboard.dashboardPage)
 		g.GET("/ws", dashboard.engine)
 		g.GET("/board/trello", dashboard.boardTrelloPage)
+		g.GET("/setting/details", dashboard.settingDetails)
+		g.GET("/setting/users", dashboard.settingUsers, csrfHeader)
 	}
 
 	r.GET("/", func(ctx echo.Context) error {
@@ -90,6 +104,30 @@ func (s *Server) jwtConfig(callback middleware.JWTErrorHandlerWithContext) echo.
 		TokenLookup:             "cookie:token",
 		ErrorHandlerWithContext: callback,
 	})
+}
+
+func fallback(err error, c echo.Context) error {
+	output := c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
+	if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
+		c.SetCookie(app.DeleteCookie)
+		return output
+	}
+	if err.Error() == "Token is expired" || err.Error() == "signature is invalid" {
+		c.SetCookie(app.DeleteCookie)
+		return output
+	}
+
+	return nil
+}
+
+func getToken(handlerFunc echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		c.Set("authorize", claims["status"])
+
+		return handlerFunc(c)
+	}
 }
 
 func (s *Server) Start(addr, port string) error {

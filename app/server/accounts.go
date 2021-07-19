@@ -1,6 +1,9 @@
 package server
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -21,13 +24,17 @@ type accountHandler struct {
 }
 
 func (h *accountHandler) loginPage(ctx echo.Context) error {
-	return ctx.Render(http.StatusOK, "login.html", nil)
+	data := map[string]interface{}{
+		"Token": ctx.Get("csrf"),
+	}
+	return ctx.Render(http.StatusOK, "login.html", data)
 }
 
 func (h *accountHandler) loginPerform(ctx echo.Context) error {
 	m := &app.LoginInput{
 		Username: ctx.Request().PostFormValue("username"),
 		Password: ctx.Request().PostFormValue("password"),
+		Token:    ctx.Request().PostFormValue("csrf"),
 	}
 	checkbox := ctx.Request().PostFormValue("remember")
 
@@ -68,6 +75,51 @@ func (h *accountHandler) loginPerform(ctx echo.Context) error {
 	h.writeCookie(ctx, "token", token)
 
 	return ctx.Redirect(http.StatusFound, "/dashboard")
+}
+
+func (h *accountHandler) registerAccount(ctx echo.Context) error {
+
+	// Read the Body content
+	var bodyBytes []byte
+	if ctx.Request().Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(ctx.Request().Body)
+	}
+
+	m := new(app.RegisterInput)
+	// Restore the io.ReadCloser to its original state
+	ctx.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	if err := json.NewDecoder(ctx.Request().Body).Decode(m); err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "Bad request",
+		})
+
+	}
+
+	if !m.ValidateAPI() {
+		return ctx.JSON(http.StatusBadRequest, m.Errors)
+	}
+
+	roleName := ctx.Get("authorize").(string)
+	adminID := ctx.QueryParam("key")
+	err := h.s.NewAccount(ctx.Request().Context(), adminID, roleName, m)
+	if err != nil {
+		m.Errors["message"] = err.Error()
+		return ctx.JSON(http.StatusBadRequest, m.Errors)
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"status": "ok"})
+}
+
+func (h *accountHandler) accountTable(ctx echo.Context) error {
+	roleName := ctx.Get("authorize").(string)
+	adminID := ctx.QueryParam("key")
+
+	listAccount, err := h.s.ListAccount(ctx.Request().Context(), adminID, roleName)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, listAccount)
 }
 
 func (h *accountHandler) refreshToken(ctx echo.Context) error {
@@ -121,14 +173,14 @@ func (h *dashboardHandler) dashboardPage(ctx echo.Context) error {
 
 func (h *dashboardHandler) boardTrelloPage(ctx echo.Context) error {
 	data := &app.DashboardContent{
-		User: ctx.Get("context"),
-		Any:  make(map[string]string),
-		Page: make(map[string]int),
+		User:  ctx.Get("context"),
+		Token: ctx.Get("csrf").(string),
+		Any:   make(map[string]string),
+		Page:  make(map[string]int),
 	}
 
 	data.Any["Location"] = "/token/refresh"
 	data.Page["Menu"] = int(app.TrelloMenu)
-	//fmt.Println(data)
 
 	return ctx.Render(http.StatusOK, "dashboard.html", data)
 }
@@ -168,4 +220,33 @@ func (h *dashboardHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx.Set("context", sess.Values)
 		return next(ctx)
 	}
+}
+
+func (h *dashboardHandler) settingDetails(ctx echo.Context) error {
+	data := &app.DashboardContent{
+		User: ctx.Get("context"),
+		Any:  make(map[string]string),
+		Page: make(map[string]int),
+	}
+
+	data.Any["Location"] = "/token/refresh"
+	data.Page["Menu"] = int(app.SettingDetails)
+
+	return ctx.Render(http.StatusOK, "dashboard.html", data)
+}
+
+func (h *dashboardHandler) settingUsers(ctx echo.Context) error {
+	data := &app.DashboardContent{
+		User:  ctx.Get("context"),
+		Token: ctx.Get("csrf").(string),
+		Any:   make(map[string]string),
+		Page:  make(map[string]int),
+	}
+
+	mmap := ctx.Get("context").(map[interface{}]interface{})
+	data.Any["Location"] = "/token/refresh"
+	data.Any["Key"] = mmap["user_id"].(string)
+	data.Page["Menu"] = int(app.SettingUsers)
+
+	return ctx.Render(http.StatusOK, "dashboard.html", data)
 }
