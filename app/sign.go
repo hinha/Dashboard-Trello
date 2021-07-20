@@ -29,7 +29,7 @@ type Accounts struct {
 	CreatedAt      time.Time `json:"created_at" gorm:"not null;"`
 	UpdatedAt      time.Time
 	LastLogin      time.Time     `json:"last_login" gorm:"not null;"`
-	Accounts       AccountDetail `json:"accounts" gorm:"ForeignKey:AccountID"`
+	Accounts       AccountDetail `json:"-" gorm:"ForeignKey:AccountID"`
 }
 
 type LoginInput struct {
@@ -69,6 +69,41 @@ func (m *LoginInput) GenerateJwt(data map[string]interface{}) (string, error) {
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+}
+
+func (m *LoginInput) RefreshJwt(oldToken string) (string, error) {
+	token, err := jwt.Parse(oldToken, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	claims := token.Claims
+	if err := claims.Valid(); err != nil {
+		return "", err
+	}
+
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	for k, v := range claims.(jwt.MapClaims) {
+		rtClaims[k] = v
+	}
+	rtClaims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	rt, err := refreshToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		return "", err
+	}
+
+	return rt, nil
 }
 
 const (

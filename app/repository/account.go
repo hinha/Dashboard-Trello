@@ -2,12 +2,14 @@ package repository
 
 import (
 	"fmt"
+	"math"
+	"time"
+
+	"gorm.io/gorm"
+
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/util/authority"
 	"github.com/hinha/PAM-Trello/app/util/generate"
-	"gorm.io/gorm"
-	"math"
-	"time"
 )
 
 type accountRepository struct {
@@ -66,7 +68,7 @@ func (r *accountRepository) GetAccount(adminID string, roleName string) ([]app.A
 	}
 
 	var accounts []app.Accounts
-	err = r.db.Find(&accounts).Limit(10).Error
+	err = r.db.Find(&accounts).Order("created_at desc").Limit(10).Error
 
 	return accounts, err
 }

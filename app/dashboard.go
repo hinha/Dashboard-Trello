@@ -6,6 +6,7 @@ type DashboardContent struct {
 	Any    map[string]string
 	Page   map[string]int
 	Token  string
+	Data   map[string]interface{}
 }
 
 type MenuType int

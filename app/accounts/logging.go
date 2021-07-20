@@ -49,7 +49,7 @@ func (s *loggingService) ListAccount(ctx context.Context, adminID string, roleNa
 			"authorize":  roleName,
 			"count_data": len(o),
 			"err":        err,
-		}).Info("NewAccount")
+		}).Info("ListAccount")
 	}(time.Now())
 
 	return s.next.ListAccount(ctx, adminID, roleName)

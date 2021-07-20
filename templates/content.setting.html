@@ -108,7 +108,7 @@
               <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
                   <div class="input-group-append" style="margin-left: -72px;margin-right: 14px;">
-                    <button type="submit" class="btn btn-primary" onclick="ListAccount('/accounts/setting/list?key={{.Any.Key}}')">
+                    <button type="submit" class="btn btn-primary" onclick="listAccount('/accounts/setting/list?key={{.Any.Key}}')">
                       <i class="fas fa-sync-alt"></i>
                     </button>
                   </div>
@@ -122,73 +122,35 @@
               </div>
             </div>
             <!-- /.card-header -->
-            <div class="card-body table-responsive p-0" style="height: 300px;">
+            <div class="card-body table-responsive p-0" style="height: 300px;" id="user-list">
               <table class="table table-head-fixed text-nowrap">
                 <thead>
                 <tr>
                   <th>ID</th>
-                  <th>User</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Reason</th>
+                  <th>Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Suspend</th>
+                  <th>Last Login</th>
+                  <th>Created At</th>
+                  <th>Action</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="user">
                 <tr>
-                  <td>183</td>
-                  <td>John Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-success">Approved</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>219</td>
-                  <td>Alexander Pierce</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-warning">Pending</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>657</td>
-                  <td>Bob Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-primary">Approved</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>175</td>
-                  <td>Mike Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-danger">Denied</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>134</td>
-                  <td>Jim Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-success">Approved</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>494</td>
-                  <td>Victoria Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-warning">Pending</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>832</td>
-                  <td>Michael Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-primary">Approved</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                  <td>982</td>
-                  <td>Rocky Doe</td>
-                  <td>11-7-2014</td>
-                  <td><span class="tag tag-danger">Denied</span></td>
-                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <div class="text-center">
+                      <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td></td>
+                  <td></td>
                 </tr>
                 </tbody>
               </table>
@@ -197,8 +159,13 @@
           </div>
           <!-- /.card -->
         </div>
+
+        <div id="option-modal">
+
+        </div>
       </div>
     </div>
+
   </section>
 </div>
 {{end}}

@@ -87,7 +87,7 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 		g.GET("/ws", dashboard.engine)
 		g.GET("/board/trello", dashboard.boardTrelloPage)
 		g.GET("/setting/details", dashboard.settingDetails)
-		g.GET("/setting/users", dashboard.settingUsers, csrfHeader)
+		g.GET("/setting/users", dashboard.settingUsers, csrfHeader, getToken)
 	}
 
 	r.GET("/", func(ctx echo.Context) error {

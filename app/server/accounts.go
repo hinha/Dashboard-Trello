@@ -119,10 +119,25 @@ func (h *accountHandler) accountTable(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 	}
 
-	return ctx.JSON(http.StatusOK, listAccount)
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": listAccount,
+	})
 }
 
 func (h *accountHandler) refreshToken(ctx echo.Context) error {
+
+	c, err := ctx.Cookie("token")
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": "token error"})
+	}
+
+	input := &app.LoginInput{}
+	token, err := input.RefreshJwt(c.Value)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	h.writeCookie(ctx, "token", token)
 	return ctx.JSON(http.StatusOK, map[string]interface{}{})
 }
 
@@ -241,6 +256,7 @@ func (h *dashboardHandler) settingUsers(ctx echo.Context) error {
 		Token: ctx.Get("csrf").(string),
 		Any:   make(map[string]string),
 		Page:  make(map[string]int),
+		Data:  make(map[string]interface{}),
 	}
 
 	mmap := ctx.Get("context").(map[interface{}]interface{})
