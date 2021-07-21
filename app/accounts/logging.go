@@ -43,7 +43,7 @@ func (s *loggingService) NewAccount(ctx context.Context, adminID string, roleNam
 func (s *loggingService) ListAccount(ctx context.Context, adminID string, roleName string) (o []app.Accounts, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
-			"method":     "register",
+			"method":     "list",
 			"took":       time.Since(begin),
 			"admin_id":   adminID,
 			"authorize":  roleName,
@@ -53,6 +53,21 @@ func (s *loggingService) ListAccount(ctx context.Context, adminID string, roleNa
 	}(time.Now())
 
 	return s.next.ListAccount(ctx, adminID, roleName)
+}
+
+func (s *loggingService) DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) (err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":     "delete",
+			"took":       time.Since(begin),
+			"admin_id":   adminId,
+			"authorize":  roleName,
+			"tag_delete": userName,
+			"err":        err,
+		}).Info("DeleteAccount")
+	}(time.Now())
+
+	return s.next.DeleteAccount(ctx, adminId, roleName, userID, userName)
 }
 
 // NewLoggingService returns a new instance of a logging Service.

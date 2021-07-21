@@ -73,6 +73,23 @@ func (r *accountRepository) GetAccount(adminID string, roleName string) ([]app.A
 	return accounts, err
 }
 
+func (r *accountRepository) CheckRole(adminID string, roleName string) error {
+	ok, err := r.access.CheckRole(adminID, roleName)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return fmt.Errorf("access permission denied, please contact admin")
+	}
+
+	return nil
+}
+
+func (r *accountRepository) DeleteAccount(id string, username string) error {
+	return r.db.Where("id = ? and username = ?", id, username).Delete(app.Accounts{}).Error
+}
+
 func NewAccountRepository(db *gorm.DB) app.AccountRepository {
 	return &accountRepository{db: db, access: authority.New(authority.Options{DB: db, TablesPrefix: "authority_"})}
 }

@@ -3,8 +3,10 @@ package server
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/sessions"
@@ -122,6 +124,24 @@ func (h *accountHandler) accountTable(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": listAccount,
 	})
+}
+
+func (h *accountHandler) deleteAccount(ctx echo.Context) error {
+	roleName := ctx.Get("authorize").(string)
+	adminID := ctx.QueryParam("key")
+	user := ctx.QueryParam("s")
+
+	separator := strings.Split(user, ",")
+	if len(separator) != 2 {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": fmt.Errorf("can't allocate request").Error()})
+	}
+
+	err := h.s.DeleteAccount(ctx.Request().Context(), adminID, roleName, separator[0], separator[1])
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "ok"})
 }
 
 func (h *accountHandler) refreshToken(ctx echo.Context) error {

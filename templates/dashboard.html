@@ -90,6 +90,7 @@
     const _0x2093=['5yhNFFO','1mThAPE','407165DAXSFy','157moTgTz','236689sqPqoo','/accounts/login','409031JoEkds','152060vrEULT','2433yfXvwo','catch','POST','abort','50227FMKWDd','then','status','339htCizf','89AzUMFY'];function _0x1cf6(_0x11eb8d,_0x44ae57){return _0x1cf6=function(_0x20932c,_0x1cf62d){_0x20932c=_0x20932c-0x1da;let _0xed9967=_0x2093[_0x20932c];return _0xed9967;},_0x1cf6(_0x11eb8d,_0x44ae57);}(function(_0x1c5e43,_0x4836d1){const _0x574536=_0x1cf6;while(!![]){try{const _0xb69317=parseInt(_0x574536(0x1e6))+-parseInt(_0x574536(0x1dd))*parseInt(_0x574536(0x1de))+-parseInt(_0x574536(0x1e0))*-parseInt(_0x574536(0x1e1))+-parseInt(_0x574536(0x1e2))*parseInt(_0x574536(0x1e7))+-parseInt(_0x574536(0x1e5))+parseInt(_0x574536(0x1e3))+-parseInt(_0x574536(0x1da))*-parseInt(_0x574536(0x1df));if(_0xb69317===_0x4836d1)break;else _0x1c5e43['push'](_0x1c5e43['shift']());}catch(_0x5af37b){_0x1c5e43['push'](_0x1c5e43['shift']());}}}(_0x2093,0x3724a),!async function(){const _0x351de9=new AbortController(),_0x1824e1=_0x351de9['signal'];setInterval(async()=>{const _0x40a38e=_0x1cf6;await fetch('{{.Any.Location}}',{'method':_0x40a38e(0x1e9),'signal':_0x1824e1})[_0x40a38e(0x1db)](_0x50c34b=>{const _0x16f752=_0x40a38e;0x191===_0x50c34b[_0x16f752(0x1dc)]?window['location']['href']=_0x16f752(0x1e4):0x190===_0x50c34b['status']&&_0x351de9[_0x16f752(0x1ea)]();})[_0x40a38e(0x1e8)](()=>{_0x351de9['abort']();});},0x7530);}());
 </script>
 <script src="/js/api.js"></script>
+{{ if eq .Page.Menu 9 }}
 <script>
     const _0x3bfc=['8751klWnif','ListAccount','2kpQKUu','551juRQxG','379436CJCuhM','216864MXZyHS','325429InhXdM','204532xILqXk','194432UaqecY','POST','2011JQvppm','33yXMayW'];function _0x386d(_0x3b212d,_0x23b8b7){return _0x386d=function(_0x3bfc09,_0x386ded){_0x3bfc09=_0x3bfc09-0x1b7;let _0x3f49ac=_0x3bfc[_0x3bfc09];return _0x3f49ac;},_0x386d(_0x3b212d,_0x23b8b7);}(function(_0x33f81c,_0x1aa43b){const _0x4f8a0c=_0x386d;while(!![]){try{const _0x384694=parseInt(_0x4f8a0c(0x1be))+-parseInt(_0x4f8a0c(0x1bb))+parseInt(_0x4f8a0c(0x1ba))+parseInt(_0x4f8a0c(0x1c1))*parseInt(_0x4f8a0c(0x1c2))+parseInt(_0x4f8a0c(0x1bc))+-parseInt(_0x4f8a0c(0x1b8))*-parseInt(_0x4f8a0c(0x1bd))+parseInt(_0x4f8a0c(0x1b9))*-parseInt(_0x4f8a0c(0x1c0));if(_0x384694===_0x1aa43b)break;else _0x33f81c['push'](_0x33f81c['shift']());}catch(_0x4e3c5e){_0x33f81c['push'](_0x33f81c['shift']());}}}(_0x3bfc,0x4275b),async function(){const _0x2d952a=_0x386d,_0x4c820e=new Api('/accounts/setting/list?key={{.Any.Key}}',_0x2d952a(0x1bf),undefined);await _0x4c820e[_0x2d952a(0x1b7)]();}());
 
@@ -100,13 +101,41 @@
     // })
 
     $(document).ready(function(){
+        const refresh_url = "/accounts/setting/list?key={{.Any.Key}}"
+
+        // Add user
+        const _form = document.getElementById("register-account");
+        _form.addEventListener("submit", FormSubmitAPI);
+
+        async function FormSubmitAPI(event) {
+            try {
+                const refresh_url = "/accounts/setting/list?key={{.Any.Key}}"
+                const formData = $( this ).serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }, {});
+                event.preventDefault();
+                const form = event.currentTarget;
+                const url = form.action;
+
+                $("#error-data").remove();
+                const request = new Api(url, 'POST', formData)
+                await request.formSubmit();
+                await listAccount(refresh_url)
+
+                // reset form
+                $( '#register-account' ).each(function(){
+                    this.reset();
+                });
+            } catch (e) {
+                console.error(e)
+            }
+        }
+
+        // Delete User
         $("#user-list").on("click", "button", function (e) {
             e.preventDefault();
             if (e.target.nodeName === 'BUTTON') {
-                console.log(e.target.nodeName)
-                console.log($(this).val())
-                $("#option-modal").html(
-                    `
+                // console.log(e.target.nodeName)
+                // console.log($(this).val())
+                $("#option-modal").html(`
                   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
@@ -121,16 +150,19 @@
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="deleteAccount('${$(this).val()}')">Yes</button>
+                          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="deleteAccount('/accounts/setting/delete?s=${$(this).val()}&key={{.Any.Key}}')">Yes</button>
                         </div>
                       </div>
                     </div>
                   </div>
-        `
-                )
-                // (async function() {
-                //     await deleteAccount("/delete")
-                // })()
+        `);
+
+                $(".modal-footer").on("click", "button", function (e) {
+                    e.preventDefault();
+                    if ($(this).text() === "Yes") {
+                        listAccount(refresh_url).then()
+                    }
+                })
             }
         })
     })
@@ -145,6 +177,7 @@
     //     // document.getElementById("demo").innerHTML = "Hello World";
     // });
 </script>
+{{end}}
 <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/js/adminlte.min.js"></script>
 </body>

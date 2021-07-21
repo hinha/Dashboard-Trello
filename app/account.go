@@ -11,6 +11,8 @@ type AccountRepository interface {
 	Store(adminID, roleName string, in *RegisterInput) error
 	FindUsername(username string) (*Accounts, error)
 	GetAccount(adminID string, roleName string) ([]Accounts, error)
+	DeleteAccount(id string, username string) error
+	CheckRole(adminID string, roleName string) error
 }
 
 type AccountDetail struct {

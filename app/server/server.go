@@ -64,6 +64,7 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 		g.POST("/login", account.loginPerform, csrfForm, account.restricted)
 		g.POST("/setting/new", account.registerAccount, s.jwtConfig(fallback), getToken)
 		g.POST("/setting/list", account.accountTable, s.jwtConfig(fallback), getToken)
+		g.POST("/setting/delete", account.deleteAccount, s.jwtConfig(fallback), getToken)
 	}
 	{
 		hub := NewHub()

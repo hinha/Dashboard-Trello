@@ -11,6 +11,7 @@ type Service interface {
 	AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accounts, string, error)
 	NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) error
 	ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error)
+	DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) error
 }
 
 type service struct {
@@ -69,6 +70,18 @@ func (s *service) NewAccount(ctx context.Context, adminID string, roleName strin
 
 func (s *service) ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error) {
 	return s.account.GetAccount(adminId, roleName)
+}
+
+func (s *service) DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) error {
+	if err := s.account.CheckRole(adminId, roleName); err != nil {
+		return err
+	}
+
+	if err := s.account.DeleteAccount(userID, userName); err != nil {
+		return fmt.Errorf("error when delete")
+	}
+
+	return nil
 }
 
 func NewService(auth app.AuthRepository, account app.AccountRepository) *service {
