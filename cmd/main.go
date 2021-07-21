@@ -93,6 +93,12 @@ func main() {
 				TablesPrefix: "authority_",
 				DB:           db,
 			})
+			auth.CreatePermission(app.PermReadWrite)
+			auth.CreatePermission(app.PermResetPassword)
+			auth.CreatePermission(app.PermListEmployee)
+			auth.CreatePermission(app.PermAttendance)
+			auth.CreatePermission(app.PermUserDetails)
+
 			auth.CreateRole("admin")
 			auth.CreatePermission(app.PermUserGroup)
 			auth.CreatePermission(app.PermUserProperties)
@@ -107,6 +113,21 @@ func main() {
 				app.PermServiceRequest,
 			})
 			auth.AssignRole(UserID, "admin")
+			auth.CreateRole("developer")
+			auth.AssignPermissions("developer", []string{
+				app.PermReadWrite,
+				app.PermResetPassword,
+				app.PermAttendance,
+				app.PermUserDetails,
+			})
+			auth.CreateRole("c_level")
+			auth.AssignPermissions("c_level", []string{
+				app.PermReadWrite,
+				app.PermResetPassword,
+				app.PermAttendance,
+				app.PermUserDetails,
+				app.PermListEmployee,
+			})
 		},
 	}
 

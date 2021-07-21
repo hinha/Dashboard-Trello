@@ -112,6 +112,11 @@ const (
 	PermUserManage         = "create and manage user views"
 	PermUserUpdatePassword = "update password expiration policies"
 	PermServiceRequest     = "manage service requests"
+	PermReadWrite          = "readWrite"
+	PermResetPassword      = "resetPassword"
+	PermListEmployee       = "listEmployee"
+	PermAttendance         = "readWriteAttendance"
+	PermUserDetails        = "readUpdateUserDetails"
 )
 
 var DeleteCookie = &http.Cookie{
