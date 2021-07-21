@@ -70,6 +70,18 @@ func (s *loggingService) DeleteAccount(ctx context.Context, adminId string, role
 	return s.next.DeleteAccount(ctx, adminId, roleName, userID, userName)
 }
 
+func (s *loggingService) GetAccessList(ctx context.Context) (o app.AccessControl, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method": "control",
+			"took":   time.Since(begin),
+			"err":    err,
+		}).Info("GetAccessList")
+	}(time.Now())
+
+	return s.next.GetAccessList(ctx)
+}
+
 // NewLoggingService returns a new instance of a logging Service.
 func NewLoggingService(logger *logrus.Entry, s Service) Service {
 	return &loggingService{logger, s}

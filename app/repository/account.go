@@ -90,6 +90,19 @@ func (r *accountRepository) DeleteAccount(id string, username string) error {
 	return r.db.Where("id = ? and username = ?", id, username).Delete(app.Accounts{}).Error
 }
 
+func (r *accountRepository) AccessControlList() (app.AccessControl, error) {
+	var result app.AccessControl
+
+	if err := r.db.Table("authority_roles").Find(&result.Authority).Error; err != nil {
+		return result, err
+	}
+	if err := r.db.Table("authority_permissions").Find(&result.Permission).Error; err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
 func NewAccountRepository(db *gorm.DB) app.AccountRepository {
 	return &accountRepository{db: db, access: authority.New(authority.Options{DB: db, TablesPrefix: "authority_"})}
 }

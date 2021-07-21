@@ -284,5 +284,11 @@ func (h *dashboardHandler) settingUsers(ctx echo.Context) error {
 	data.Any["Key"] = mmap["user_id"].(string)
 	data.Page["Menu"] = int(app.SettingUsers)
 
+	control, err := h.s.GetAccessList(ctx.Request().Context())
+	if err != nil {
+		h.logger.Error(err)
+	}
+	data.Data["AccessControl"] = control
+
 	return ctx.Render(http.StatusOK, "dashboard.html", data)
 }

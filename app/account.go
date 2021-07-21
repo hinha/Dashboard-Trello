@@ -13,6 +13,7 @@ type AccountRepository interface {
 	GetAccount(adminID string, roleName string) ([]Accounts, error)
 	DeleteAccount(id string, username string) error
 	CheckRole(adminID string, roleName string) error
+	AccessControlList() (AccessControl, error)
 }
 
 type AccountDetail struct {
@@ -58,4 +59,13 @@ func (m *RegisterInput) GeneratePassword(secret string) (string, error) {
 	}
 
 	return string(hashedPassword), nil
+}
+
+type AccessControl struct {
+	Authority []struct {
+		Name string `json:"name"`
+	} `json:"authority"`
+	Permission []struct {
+		Name string `json:"name"`
+	} `json:"permission"`
 }

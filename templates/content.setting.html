@@ -85,14 +85,37 @@
             <form>
               <div class="card-body">
                 <div class="form-group">
-                  <label>Password</label>
-                  <input type="password" class="form-control" placeholder="Password">
+                  <label>Select User</label>
+                  <select class="form-control select2" style="width: 100%;" id="opt-select-user">
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Select Role</label>
+                  <select class="form-control select2" style="width: 100%;" id="opt-select-role">
+                    {{range $i, $val := .Data.AccessControl.Authority }}
+                      {{ if eq $i 1 }}
+                        <option selected="selected" value="{{$val}}">{{$val.Name}}</option>
+                      {{end}}
+                      <option value="{{$val}}">{{$val.Name}}</option>
+                    {{end}}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Select Permission</label>
+                  <select class="form-control select2" style="width: 100%;" id="opt-select-permission">
+                    {{range $i, $val := .Data.AccessControl.Permission }}
+                      {{ if eq $i 1 }}
+                        <option selected="selected" value="{{$val}}">{{$val.Name}}</option>
+                      {{end}}
+                        <option value="{{$val}}">{{$val.Name}}</option>
+                    {{end}}
+                  </select>
                 </div>
               </div>
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Create</button>
               </div>
             </form>
           </div>

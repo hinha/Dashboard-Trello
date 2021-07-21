@@ -12,6 +12,7 @@ type Service interface {
 	NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) error
 	ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error)
 	DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) error
+	GetAccessList(ctx context.Context) (app.AccessControl, error)
 }
 
 type service struct {
@@ -82,6 +83,17 @@ func (s *service) DeleteAccount(ctx context.Context, adminId string, roleName st
 	}
 
 	return nil
+}
+
+func (s *service) GetAccessList(ctx context.Context) (app.AccessControl, error) {
+	// TODO: need filter by admin
+
+	control, err := s.account.AccessControlList()
+	if err != nil {
+		return control, err
+	}
+
+	return control, nil
 }
 
 func NewService(auth app.AuthRepository, account app.AccountRepository) *service {
