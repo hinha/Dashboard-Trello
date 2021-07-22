@@ -13,6 +13,8 @@ type AccountRepository interface {
 	GetAccount(adminID string, roleName string) ([]Accounts, error)
 	DeleteAccount(id string, username string) error
 	CheckRole(adminID string, roleName string) error
+	GivenPermission(userId string, roleName string, permName string) error
+	AssignAccessControl(adminID string, roleName string, control *AssignRole) error
 	AccessControlList() (AccessControl, error)
 }
 
@@ -68,4 +70,25 @@ type AccessControl struct {
 	Permission []struct {
 		Name string `json:"name"`
 	} `json:"permission"`
+}
+
+type AssignRole struct {
+	UserID     string            `json:"userID"`
+	Role       string            `json:"role"`
+	Permission string            `json:"permission"`
+	Errors     map[string]string `json:"-"`
+}
+
+func (m *AssignRole) Validate() bool {
+	m.Errors = make(map[string]string)
+
+	if strings.TrimSpace(m.UserID) == "" {
+		m.Errors["message"] = "Empty user"
+	} else if strings.TrimSpace(m.Role) == "" {
+		m.Errors["message"] = "Please select a role"
+	} else if strings.TrimSpace(m.Permission) == "" {
+		m.Errors["message"] = "Please select a permission"
+	}
+
+	return len(m.Errors) == 0
 }

@@ -175,7 +175,23 @@
             }
         })
 
-        // $(".select2 option[value='empty']").remove();
+        const _formAssignRole = document.getElementById("assign-role");
+        _formAssignRole.addEventListener("submit", FormAssignRole);
+        async function FormAssignRole(event) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const url = form.action;
+
+            const userID = $('#opt-select-user option').filter(':selected').val()
+            const role = $('#opt-select-role option').filter(':selected').val()
+            const permission = $('#opt-select-permission option').filter(':selected').val()
+            console.log(role)
+            await createRole(url, {
+                userID: userID,
+                role: role,
+                permission: permission
+            }, '{{.Any.Key}}')
+        }
     })
 
 

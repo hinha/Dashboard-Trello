@@ -82,6 +82,20 @@ func (s *loggingService) GetAccessList(ctx context.Context) (o app.AccessControl
 	return s.next.GetAccessList(ctx)
 }
 
+func (s *loggingService) NewAccessControlList(ctx context.Context, adminId string, roleAdmin string, control *app.AssignRole) (err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":    "accessControl",
+			"took":      time.Since(begin),
+			"admin_id":  adminId,
+			"authorize": roleAdmin,
+			"err":       err,
+		}).Info("DeleteAccount")
+	}(time.Now())
+
+	return s.next.NewAccessControlList(ctx, adminId, roleAdmin, control)
+}
+
 // NewLoggingService returns a new instance of a logging Service.
 func NewLoggingService(logger *logrus.Entry, s Service) Service {
 	return &loggingService{logger, s}

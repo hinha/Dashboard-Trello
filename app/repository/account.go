@@ -90,6 +90,56 @@ func (r *accountRepository) DeleteAccount(id string, username string) error {
 	return r.db.Where("id = ? and username = ?", id, username).Delete(app.Accounts{}).Error
 }
 
+func (r accountRepository) GivenPermission(userId string, roleName, permName string) error {
+	// check if a role have a given permission
+	ok, err := r.access.CheckRolePermission(roleName, permName)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("permission not allowed by role name")
+	}
+
+	ok, err = r.access.CheckPermission(userId, permName)
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		return fmt.Errorf("have already registered permission access")
+	}
+
+	return nil
+}
+
+func (r *accountRepository) AssignAccessControl(adminID string, roleName string, control *app.AssignRole) error {
+	ok, err := r.access.CheckRole(adminID, roleName)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return fmt.Errorf("access permission denied, please contact admin")
+	}
+
+	// check if a role have a given permission
+	ok, err = r.access.CheckRolePermission(control.Role, control.Permission)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return fmt.Errorf("role not defined from registry")
+	}
+
+	// allowed status if true
+	if err := r.access.AssignRole(control.UserID, control.Role); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *accountRepository) AccessControlList() (app.AccessControl, error) {
 	var result app.AccessControl
 

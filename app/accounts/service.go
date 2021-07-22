@@ -13,6 +13,7 @@ type Service interface {
 	ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error)
 	DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) error
 	GetAccessList(ctx context.Context) (app.AccessControl, error)
+	NewAccessControlList(ctx context.Context, adminId string, roleAdmin string, control *app.AssignRole) error
 }
 
 type service struct {
@@ -94,6 +95,17 @@ func (s *service) GetAccessList(ctx context.Context) (app.AccessControl, error) 
 	}
 
 	return control, nil
+}
+
+func (s *service) NewAccessControlList(ctx context.Context, adminId string, roleAdmin string, control *app.AssignRole) error {
+	if err := s.account.GivenPermission(control.UserID, control.Role, control.Permission); err != nil {
+		if err.Error() == "user doesn't have a role assigned" {
+			return s.account.AssignAccessControl(adminId, roleAdmin, control)
+		}
+		return err
+	}
+
+	return fmt.Errorf("something error when assign permission")
 }
 
 func NewService(auth app.AuthRepository, account app.AccountRepository) *service {

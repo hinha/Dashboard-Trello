@@ -82,7 +82,7 @@
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form>
+            <form action="/accounts/setting/role/new" id="assign-role">
               <div class="card-body">
                 <div class="form-group">
                   <label>Select User</label>
@@ -94,9 +94,9 @@
                   <select class="form-control select2" style="width: 100%;" id="opt-select-role">
                     {{range $i, $val := .Data.AccessControl.Authority }}
                       {{ if eq $i 1 }}
-                        <option selected="selected" value="{{$val}}">{{$val.Name}}</option>
+                        <option selected="selected" value="{{$val.Name}}">{{$val.Name}}</option>
                       {{end}}
-                      <option value="{{$val}}">{{$val.Name}}</option>
+                      <option value="{{$val.Name}}">{{$val.Name}}</option>
                     {{end}}
                   </select>
                 </div>
@@ -105,9 +105,9 @@
                   <select class="form-control select2" style="width: 100%;" id="opt-select-permission">
                     {{range $i, $val := .Data.AccessControl.Permission }}
                       {{ if eq $i 1 }}
-                        <option selected="selected" value="{{$val}}">{{$val.Name}}</option>
+                        <option selected="selected" value="{{$val.Name}}">{{$val.Name}}</option>
                       {{end}}
-                        <option value="{{$val}}">{{$val.Name}}</option>
+                        <option value="{{$val.Name}}">{{$val.Name}}</option>
                     {{end}}
                   </select>
                 </div>

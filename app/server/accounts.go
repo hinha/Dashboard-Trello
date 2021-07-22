@@ -144,6 +144,42 @@ func (h *accountHandler) deleteAccount(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, map[string]string{"message": "ok"})
 }
 
+func (h *accountHandler) assignRoleAccount(ctx echo.Context) error {
+	adminID := ctx.Request().Header.Get("Admin-Id")
+	if adminID == "" {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"message": "bad request"})
+	}
+
+	// Read the Body content
+	var bodyBytes []byte
+	if ctx.Request().Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(ctx.Request().Body)
+	}
+
+	m := new(app.AssignRole)
+	// Restore the io.ReadCloser to its original state
+	ctx.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	if err := json.NewDecoder(ctx.Request().Body).Decode(m); err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "Bad request",
+		})
+
+	}
+
+	if !m.Validate() {
+		return ctx.JSON(http.StatusBadRequest, m.Errors)
+	}
+
+	roleName := ctx.Get("authorize").(string)
+	err := h.s.NewAccessControlList(ctx.Request().Context(), adminID, roleName, m)
+	if err != nil {
+		m.Errors["message"] = err.Error()
+		return ctx.JSON(http.StatusBadRequest, m.Errors)
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "ok"})
+}
+
 func (h *accountHandler) refreshToken(ctx echo.Context) error {
 
 	c, err := ctx.Cookie("token")
@@ -188,7 +224,7 @@ type dashboardHandler struct {
 	logger *log.Entry
 }
 
-var upgrader = websocket.Upgrader{
+var upgraded = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
@@ -227,7 +263,7 @@ func (h *dashboardHandler) engine(ctx echo.Context) error {
 	userID := get.(map[interface{}]interface{})["user_id"].(string)
 
 	// Upgrading the HTTP connection socket connection
-	connection, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
+	connection, err := upgraded.Upgrade(ctx.Response(), ctx.Request(), nil)
 	if err != nil {
 		h.logger.Error(err)
 		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
