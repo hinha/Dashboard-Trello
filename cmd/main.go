@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"gorm.io/gorm/logger"
+	cron_server "github.com/hinha/PAM-Trello/app/server/cron"
+	gorm_logger "gorm.io/gorm/logger"
 	"math"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -51,9 +53,16 @@ func main() {
 		dbHost    = envString("DB_HOST", "127.0.0.1")
 	)
 
+	logger := log.New()
+	logger.Formatter = new(log.TextFormatter)
+	logger.Formatter.(*log.TextFormatter).DisableColors = true
+	logger.Formatter.(*log.TextFormatter).FullTimestamp = true
+	logger.Level = log.TraceLevel
+	logger.WithField("ts", logger.WithTime(time.Now()))
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger: gorm_logger.Default.LogMode(gorm_logger.Silent),
 	})
 	if err != nil {
 		log.Fatal(err.Error())
@@ -143,13 +152,6 @@ func main() {
 			var accountRepo app.AccountRepository
 			accountRepo = repository.NewAccountRepository(db)
 
-			logger := log.New()
-			logger.Formatter = new(log.TextFormatter)
-			logger.Formatter.(*log.TextFormatter).DisableColors = true
-			logger.Formatter.(*log.TextFormatter).FullTimestamp = true
-			logger.Level = log.TraceLevel
-			logger.WithField("ts", logger.WithTime(time.Now()))
-
 			var as accounts.Service
 			as = accounts.NewService(authRepo, accountRepo)
 			as = accounts.NewLoggingService(logger.WithField("component", "accounts"), as)
@@ -177,7 +179,25 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(cmdMigrate, cmdRun)
+	var cmdJob = &cobra.Command{
+		Use:     "job",
+		Short:   "Running scheduler dashboard",
+		Example: "job",
+		Run: func(cmd *cobra.Command, args []string) {
+			worker := cron_server.New(logger.WithField("component", "worker"))
+			worker.Start()
+
+			logger.Info("worker is now running.  Press CTRL-C to exit.")
+			sc := make(chan os.Signal, 1)
+			signal.Notify(sc, os.Interrupt, syscall.SIGTERM)
+			<-sc
+
+			worker.Stop()
+			logger.Info("Gracefully shutdown the job...")
+		},
+	}
+
+	rootCmd.AddCommand(cmdMigrate, cmdRun, cmdJob)
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}

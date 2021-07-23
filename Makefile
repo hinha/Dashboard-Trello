@@ -4,6 +4,9 @@ export
 start:
 	go run cmd/main.go start
 
+job:
+	go run cmd/main.go job
+
 migrate:
 	go run cmd/main.go migrate
 
