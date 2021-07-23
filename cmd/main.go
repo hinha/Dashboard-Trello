@@ -76,7 +76,7 @@ func main() {
 			// TODO: Need refactor
 
 			// initiate authority
-			db.AutoMigrate(&app.Accounts{}, &app.AccountDetail{})
+			fmt.Println(db.AutoMigrate(&app.Accounts{}, &app.AccountDetail{}, &app.TrelloUserCard{}, &app.Trello{}))
 
 			password := []byte(fmt.Sprintf("%s:%s", appSecret, "admin"))
 			// Hashing the password with the default cost of 10
