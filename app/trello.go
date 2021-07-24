@@ -3,6 +3,7 @@ package app
 import "time"
 
 type TrelloRepository interface {
+	Store(in *TrelloUserCard) (*TrelloUserCard, error)
 }
 
 type Trello struct {
