@@ -3,12 +3,15 @@ package cron_server
 import (
 	"github.com/gocraft/work"
 	"github.com/gomodule/redigo/redis"
+	"github.com/hinha/PAM-Trello/app/trello"
 	log "github.com/sirupsen/logrus"
 )
 
 const AppName = "trelloProject"
 
 type Server struct {
+	Trello trello.Service
+
 	Logger *log.Entry
 	worker *work.WorkerPool
 	pool   *redis.Pool
@@ -16,8 +19,10 @@ type Server struct {
 
 var batchTime = "0 */2 * * * *"
 
-func New(logger *log.Entry) *Server {
+func New(trello trello.Service, logger *log.Entry) *Server {
 	s := &Server{
+		Trello: trello,
+
 		Logger: logger,
 	}
 
@@ -25,7 +30,7 @@ func New(logger *log.Entry) *Server {
 
 	worker := work.NewWorkerPool(struct{}{}, 3, AppName, s.pool)
 
-	fh := trelloJobHandler{logger: logger}
+	fh := trelloJobHandler{s: s.Trello, logger: logger}
 	worker.PeriodicallyEnqueue(batchTime, fh.name()).JobWithOptions(fh.name(), work.JobOptions{
 		Priority: 1,
 		MaxFails: 3,

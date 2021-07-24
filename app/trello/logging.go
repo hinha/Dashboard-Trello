@@ -1,8 +1,7 @@
 package trello
 
 import (
-	"context"
-	"github.com/hinha/PAM-Trello/app/pb/trello"
+	"github.com/hinha/PAM-Trello/app"
 	"github.com/sirupsen/logrus"
 	"time"
 )
@@ -12,18 +11,16 @@ type loggingService struct {
 	next   Service
 }
 
-func (s *loggingService) Create(ctx context.Context, mod *trello.Response) (err error) {
+func (s *loggingService) Create(card *app.TrelloUserCard) (err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
-			"method":     "accessControl",
-			"took":       time.Since(begin),
-			"data_in":    mod.LastUpdate,
-			"data_error": mod.Error,
-			"err":        err,
-		}).Info("DeleteAccount")
+			"took":    time.Since(begin),
+			"data_in": card.CardID,
+			"err":     err,
+		}).Info("Create")
 	}(time.Now())
 
-	return s.next.Create(ctx, mod)
+	return s.next.Create(card)
 }
 
 // NewLoggingService returns a new instance of a logging Service.

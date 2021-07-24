@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	cron_server "github.com/hinha/PAM-Trello/app/server/cron"
+	"github.com/hinha/PAM-Trello/app/trello"
 	gorm_logger "gorm.io/gorm/logger"
 	"math"
 	"os"
@@ -76,13 +77,16 @@ func main() {
 			// TODO: Need refactor
 
 			// initiate authority
-			fmt.Println(db.AutoMigrate(&app.Accounts{}, &app.AccountDetail{}, &app.TrelloUserCard{}, &app.Trello{}))
+			err := db.AutoMigrate(&app.Accounts{}, &app.AccountDetail{}, &app.Trello{}, &app.TrelloUserCard{})
+			if err != nil {
+				logger.Fatal(err)
+			}
 
 			password := []byte(fmt.Sprintf("%s:%s", appSecret, "admin"))
 			// Hashing the password with the default cost of 10
 			hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 			if err != nil {
-				panic(err)
+				logger.Fatal(err)
 			}
 			t := time.Date(2021, 7, 15, 15, 00, 00, 00, time.UTC)
 			UserID := fmt.Sprintf("%d%d", int(t.Unix()/100)%math.MaxInt64, len(hashedPassword))
@@ -184,7 +188,14 @@ func main() {
 		Short:   "Running scheduler dashboard",
 		Example: "job",
 		Run: func(cmd *cobra.Command, args []string) {
-			worker := cron_server.New(logger.WithField("component", "worker"))
+			var tR app.TrelloRepository
+			tR = repository.NewTrelloRepository(db)
+
+			var ts trello.Service
+			ts = trello.New(tR)
+			ts = trello.NewLoggingService(logger.WithField("component", "trelloClient"), ts)
+
+			worker := cron_server.New(ts, logger.WithField("component", "worker"))
 			worker.Start()
 
 			logger.Info("worker is now running.  Press CTRL-C to exit.")
