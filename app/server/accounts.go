@@ -244,10 +244,9 @@ func (h *dashboardHandler) dashboardPage(ctx echo.Context) error {
 
 func (h *dashboardHandler) boardTrelloPage(ctx echo.Context) error {
 	data := &app.DashboardContent{
-		User:  ctx.Get("context"),
-		Token: ctx.Get("csrf").(string),
-		Any:   make(map[string]string),
-		Page:  make(map[string]int),
+		User: ctx.Get("context"),
+		Any:  make(map[string]string),
+		Page: make(map[string]int),
 	}
 
 	data.Any["Location"] = "/token/refresh"
