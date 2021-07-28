@@ -146,5 +146,6 @@ node_modules/
 vendor/
 .vscode/
 .idea/
+/frontend/public
 
 internal/
