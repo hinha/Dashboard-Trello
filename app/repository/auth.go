@@ -38,7 +38,7 @@ func (r *authRepository) GetRole(userID string) (string, error) {
 }
 
 func (r *authRepository) UpdateLogin(userID string) error {
-	return r.db.Table("accounts").Where("id=?", userID).Updates(app.Accounts{LastLogin: time.Now()}).Error
+	return r.db.Table("accounts").Where("id=?", userID).Updates(app.Accounts{LastLogin: time.Now(), OnlineStatus: true}).Error
 }
 
 func NewAuthRepository(db *gorm.DB) app.AuthRepository {

@@ -10,12 +10,15 @@ import (
 type AccountRepository interface {
 	Store(adminID, roleName string, in *RegisterInput) error
 	FindUsername(username string) (*Accounts, error)
+	FindID(id string) (*Accounts, error)
 	GetAccount(adminID string, roleName string) ([]Accounts, error)
 	DeleteAccount(id string, username string) error
 	CheckRole(adminID string, roleName string) error
 	GivenPermission(userId string, roleName string, permName string) error
 	AssignAccessControl(adminID string, roleName string, control *AssignRole) error
 	AccessControlList() (AccessControl, error)
+	SetOnlineStatus(id string, status bool) error
+	GetOnlineStatus(Id string) ([]*Accounts, error)
 }
 
 type AccountDetail struct {

@@ -57,6 +57,12 @@ func (r *accountRepository) FindUsername(username string) (*app.Accounts, error)
 	return account, err
 }
 
+func (r *accountRepository) FindID(id string) (*app.Accounts, error) {
+	account := new(app.Accounts)
+	err := r.db.Find(account, "id = ?", id).Error
+	return account, err
+}
+
 func (r *accountRepository) GetAccount(adminID string, roleName string) ([]app.Accounts, error) {
 	ok, err := r.access.CheckRole(adminID, roleName)
 	if err != nil {
@@ -151,6 +157,16 @@ func (r *accountRepository) AccessControlList() (app.AccessControl, error) {
 	}
 
 	return result, nil
+}
+
+func (r *accountRepository) SetOnlineStatus(id string, status bool) error {
+	return r.db.Table("accounts").Where("id=?", id).Updates(app.Accounts{OnlineStatus: status}).Error
+}
+
+func (r *accountRepository) GetOnlineStatus(Id string) ([]*app.Accounts, error) {
+	var accounts []*app.Accounts
+	err := r.db.Table("accounts").Not(map[string]interface{}{"id": []string{Id}}).Find(&accounts).Order("last_login desc").Error
+	return accounts, err
 }
 
 func NewAccountRepository(db *gorm.DB) app.AccountRepository {

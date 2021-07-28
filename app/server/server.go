@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/hinha/PAM-Trello/vendor/github.com/dgrijalva/jwt-go"
+	"github.com/hinha/PAM-Trello/vendor/github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -16,19 +18,25 @@ import (
 
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/accounts"
+	"github.com/hinha/PAM-Trello/app/handling"
+	"github.com/hinha/PAM-Trello/app/trello"
 )
 
 type Server struct {
 	Account accounts.Service
+	Trello  trello.Service
+	Inbox   handling.ServiceInbox
 
 	Logger *log.Entry
 
 	router *echo.Echo
 }
 
-func New(account accounts.Service, logger *log.Entry) *Server {
+func New(account accounts.Service, trello trello.Service, handlingInbox handling.ServiceInbox, logger *log.Entry) *Server {
 	s := &Server{
 		Account: account,
+		Trello:  trello,
+		Inbox:   handlingInbox,
 
 		Logger: logger,
 	}
@@ -51,42 +59,69 @@ func New(account accounts.Service, logger *log.Entry) *Server {
 	csrfForm := middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "form:csrf",
 	})
-	csrfHeader := middleware.CSRF()
+	csrfHeader := middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLength:    32,
+		TokenLookup:    "header:" + echo.HeaderXCSRFToken,
+		ContextKey:     "csrf",
+		CookieName:     "_csrf",
+		CookieSecure:   true,
+		CookieMaxAge:   86400,
+		CookieSameSite: http.SameSiteDefaultMode,
+	})
 
 	r.Static("/", "static")
 	r.Renderer = templateRenderer("templates/*.html", true)
-	r.Use(session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("APP_SECRET")))))
 	{
-		account := accountHandler{s: s.Account}
-		r.POST("/token/refresh", account.refreshToken, s.jwtConfig(fallback))
-		g := r.Group("/accounts")
-		g.GET("/login", account.loginPage, csrfForm, account.restricted)
-		g.POST("/login", account.loginPerform, csrfForm, account.restricted)
-		g.POST("/setting/new", account.registerAccount, s.jwtConfig(fallback), getToken)
-		g.POST("/setting/list", account.accountTable, s.jwtConfig(fallback), getToken)
-		g.POST("/setting/delete", account.deleteAccount, s.jwtConfig(fallback), getToken)
-		g.POST("/setting/role/new", account.assignRoleAccount, s.jwtConfig(fallback), getToken)
+		{
+			account := apiAccountHandler{s: s.Account, logger: s.Logger}
+			api := r.Group("/api")
+
+			apiAccount := api.Group("/accounts")
+			apiAccount.GET("/login", account.formToken, csrfHeader)
+			apiAccount.POST("/login", account.loginPerform)
+
+			gAccountSub1 := apiAccount.Group("/data", s.jwtConfigHeader(fallback), getToken)
+			gAccountSub1.GET("", account.profileData)
+			gAccountSub1.POST("/refresh", account.refreshToken)
+
+			dashboard := apiDashboardHandler{s: s.Trello, logger: s.Logger}
+			apiDashboard := api.Group("/dashboard", s.jwtConfigHeader(fallback), getToken, dashboard.verify)
+			apiDashboard.GET("/performance", dashboard.performance)
+		}
+		{
+			account := accountHandler{s: s.Account}
+			r.POST("/token/refresh", account.refreshToken, s.jwtConfig(fallback))
+			g := r.Group("/accounts")
+			g.GET("/login", account.loginPage, csrfForm, account.restricted)
+			g.POST("/login", account.loginPerform, csrfForm, account.restricted)
+			g.POST("/setting/new", account.registerAccount, s.jwtConfig(fallback), getToken)
+			g.POST("/setting/list", account.accountTable, s.jwtConfig(fallback), getToken)
+			g.POST("/setting/delete", account.deleteAccount, s.jwtConfig(fallback), getToken)
+			g.POST("/setting/role/new", account.assignRoleAccount, s.jwtConfig(fallback), getToken)
+		}
 	}
 	{
 		hub := NewHub()
 		go hub.Run()
-		dashboard := dashboardHandler{s: s.Account, logger: s.Logger, hub: hub}
-		g := r.Group("/dashboard", dashboard.restricted)
-		g.Use(s.jwtConfig(func(err error, c echo.Context) error {
-
-			if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
-				return c.Redirect(http.StatusPermanentRedirect, "/accounts/login")
-			}
-
-			if err.Error() == "Token is expired" || err.Error() == "signature is invalid" {
-				c.SetCookie(app.DeleteCookie)
-				return c.Redirect(http.StatusPermanentRedirect, "/accounts/login")
-			}
-			return nil
-		}))
+		dashboard := dashboardHandler{s: s.Account, socket: s.Inbox, logger: s.Logger, hub: hub}
+		g := r.Group("/dashboard")
+		//g.Use(s.jwtConfig(func(err error, c echo.Context) error {
+		//
+		//	if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
+		//		return c.Redirect(http.StatusPermanentRedirect, "/accounts/login")
+		//	}
+		//
+		//	if err.Error() == "Token is expired" || err.Error() == "signature is invalid" {
+		//		c.SetCookie(app.DeleteCookie)
+		//		return c.Redirect(http.StatusPermanentRedirect, "/accounts/login")
+		//	}
+		//	return nil
+		//}))
 
 		g.GET("", dashboard.dashboardPage)
 		g.GET("/ws", dashboard.engine)
+		g.GET("/inbox", dashboard.inbox)
+		g.GET("/inbox/ws", dashboard.inboxSocket)
 		g.GET("/board/trello", dashboard.boardTrelloPage)
 		g.GET("/setting/details", dashboard.settingDetails)
 		g.GET("/setting/users", dashboard.settingUsers, csrfHeader, getToken)
@@ -104,6 +139,13 @@ func (s *Server) jwtConfig(callback middleware.JWTErrorHandlerWithContext) echo.
 	return middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey:              []byte(os.Getenv("JWT_SECRET")),
 		TokenLookup:             "cookie:token",
+		ErrorHandlerWithContext: callback,
+	})
+}
+
+func (s *Server) jwtConfigHeader(callback middleware.JWTErrorHandlerWithContext) echo.MiddlewareFunc {
+	return middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey:              []byte(os.Getenv("JWT_SECRET")),
 		ErrorHandlerWithContext: callback,
 	})
 }
@@ -127,12 +169,34 @@ func getToken(handlerFunc echo.HandlerFunc) echo.HandlerFunc {
 		user := c.Get("user").(*jwt.Token)
 		claims := user.Claims.(jwt.MapClaims)
 		c.Set("authorize", claims["status"])
+		c.Set("user_id", claims["id"])
+		c.Set("jwt", user.Raw)
 
 		return handlerFunc(c)
 	}
 }
 
 func (s *Server) Start(addr, port string) error {
+	s.router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowCredentials: true,
+		AllowOrigins:     []string{"*"},
+		AllowHeaders: []string{
+			echo.HeaderAuthorization,
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+			echo.HeaderAccessControlAllowHeaders,
+			echo.HeaderAccessControlAllowOrigin,
+			echo.HeaderXRequestID,
+			echo.HeaderXXSSProtection, // start security
+			echo.HeaderXFrameOptions,
+			echo.HeaderContentSecurityPolicy,
+			echo.HeaderContentSecurityPolicyReportOnly,
+			echo.HeaderXCSRFToken,
+			echo.HeaderReferrerPolicy, // end security
+		},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
+	}), session.Middleware(sessions.NewCookieStore([]byte(os.Getenv("APP_SECRET")))))
 	return s.router.Start(fmt.Sprintf("%s:%s", addr, port))
 }
 

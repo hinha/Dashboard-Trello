@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/hinha/PAM-Trello/app/handling"
 	cron_server "github.com/hinha/PAM-Trello/app/server/cron"
 	"github.com/hinha/PAM-Trello/app/trello"
 	gorm_logger "gorm.io/gorm/logger"
@@ -156,11 +157,23 @@ func main() {
 			var accountRepo app.AccountRepository
 			accountRepo = repository.NewAccountRepository(db)
 
+			var tR app.TrelloRepository
+			tR = repository.NewTrelloRepository(db)
+
+			var ts trello.Service
+			ts = trello.New(tR)
+			ts = trello.NewLoggingService(logger.WithField("component", "trelloClient"), ts)
+
+			// Handling
+			var inbox handling.ServiceInbox
+			inbox = handling.NewHandlingInbox(accountRepo)
+			go inbox.Run()
+
 			var as accounts.Service
 			as = accounts.NewService(authRepo, accountRepo)
 			as = accounts.NewLoggingService(logger.WithField("component", "accounts"), as)
 
-			srv := server.New(as, logger.WithField("component", "http"))
+			srv := server.New(as, ts, inbox, logger.WithField("component", "http"))
 
 			go func() {
 				logger.WithFields(log.Fields{"transport": "http", "address": defaultPort}).Info("listening")

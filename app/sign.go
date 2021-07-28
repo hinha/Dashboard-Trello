@@ -34,10 +34,11 @@ type Accounts struct {
 }
 
 type LoginInput struct {
-	Username string
-	Password string
-	Errors   map[string]string
-	Token    string
+	Username  string
+	Password  string
+	Errors    map[string]string
+	Token     string
+	LongToken bool
 }
 
 func (m *LoginInput) Validate() bool {
@@ -67,7 +68,12 @@ func (m *LoginInput) GenerateJwt(data map[string]interface{}) (string, error) {
 	for k, v := range data {
 		claims[k] = v
 	}
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	if m.LongToken {
+		claims["exp"] = time.Now().Add(time.Hour * 168).Unix()
+	} else {
+		claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	}
 
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
@@ -105,6 +111,14 @@ func (m *LoginInput) RefreshJwt(oldToken string) (string, error) {
 	}
 
 	return rt, nil
+}
+
+func (m *Accounts) Payload() interface{} {
+	return map[string]interface{}{
+		"email": m.Email,
+		"id":    m.ID,
+		"exp":   time.Now().Add(time.Hour * 24).Unix(),
+	}
 }
 
 const (

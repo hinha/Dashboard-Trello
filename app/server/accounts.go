@@ -17,6 +17,7 @@ import (
 
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/accounts"
+	"github.com/hinha/PAM-Trello/app/handling"
 )
 
 type accountHandler struct {
@@ -218,7 +219,8 @@ func (h *accountHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 type dashboardHandler struct {
-	s accounts.Service
+	s      accounts.Service
+	socket handling.ServiceInbox
 
 	hub    *Hub
 	logger *log.Entry
@@ -227,6 +229,9 @@ type dashboardHandler struct {
 var upgraded = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func (h *dashboardHandler) dashboardPage(ctx echo.Context) error {
@@ -256,10 +261,14 @@ func (h *dashboardHandler) boardTrelloPage(ctx echo.Context) error {
 }
 
 func (h *dashboardHandler) engine(ctx echo.Context) error {
-	get := ctx.Get("context")
-	username := get.(map[interface{}]interface{})["username"].(string)
-	name := get.(map[interface{}]interface{})["name"].(string)
-	userID := get.(map[interface{}]interface{})["user_id"].(string)
+	//get := ctx.Get("context")
+	//username := get.(map[interface{}]interface{})["username"].(string)
+	//name := get.(map[interface{}]interface{})["name"].(string)
+	//userID := get.(map[interface{}]interface{})["user_id"].(string)
+
+	username := "asd"
+	name := "name"
+	userID := "aaa"
 
 	// Upgrading the HTTP connection socket connection
 	connection, err := upgraded.Upgrade(ctx.Response(), ctx.Request(), nil)
@@ -290,6 +299,35 @@ func (h *dashboardHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx.Set("context", sess.Values)
 		return next(ctx)
 	}
+}
+
+func (h *dashboardHandler) inbox(ctx echo.Context) error {
+	data := &app.DashboardContent{
+		User: ctx.Get("context"),
+		Any:  make(map[string]string),
+		Page: make(map[string]int),
+	}
+
+	data.Any["Location"] = "/token/refresh"
+	data.Page["Menu"] = int(app.HomeMenuInbox)
+
+	return ctx.Render(http.StatusOK, "dashboard.html", data)
+}
+
+func (h *dashboardHandler) inboxSocket(ctx echo.Context) error {
+
+	// Upgrading the HTTP connection socket connection
+	connection, err := upgraded.Upgrade(ctx.Response(), ctx.Request(), nil)
+	if err != nil {
+		h.logger.Error(err)
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+	//get := ctx.Get("context")
+	//userID := get.(map[interface{}]interface{})["user_id"].(string)
+
+	h.socket.CreateNewSocketUser(connection, "userID")
+
+	return nil
 }
 
 func (h *dashboardHandler) settingDetails(ctx echo.Context) error {

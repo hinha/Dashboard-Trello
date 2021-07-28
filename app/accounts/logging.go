@@ -25,6 +25,20 @@ func (s *loggingService) AuthLogin(ctx context.Context, in *app.LoginInput) (o *
 	return s.next.AuthLogin(ctx, in)
 }
 
+func (s *loggingService) GetProfile(ctx context.Context, id string) (o *app.Accounts, secret string, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":     "account",
+			"took":       time.Since(begin),
+			"request_id": id,
+			"username":   o.Username,
+			"err":        err,
+		}).Info("GetProfile")
+	}(time.Now())
+
+	return s.next.GetProfile(ctx, id)
+}
+
 func (s *loggingService) NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) (err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{

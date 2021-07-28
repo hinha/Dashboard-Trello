@@ -7,6 +7,7 @@ import (
 
 type TrelloRepository interface {
 	Store(in *TrelloUserCard) (*TrelloUserCard, error)
+	FindCardCategory(id string, category string) (int, error)
 }
 
 type Trello struct {
@@ -43,4 +44,13 @@ type TrelloUserCard struct {
 
 func (TrelloUserCard) TableName() string {
 	return "trello_user_card"
+}
+
+type Performance struct {
+	Todo          int         `json:"todo"`
+	OnProgress    int         `json:"on_progress"`
+	Done          int         `json:"done"`
+	Product       interface{} `json:"product"`
+	Daily         interface{} `json:"daily"`
+	TimelineGantt interface{} `json:"timeline_gantt"`
 }
