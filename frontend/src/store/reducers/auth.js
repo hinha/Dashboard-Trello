@@ -3,7 +3,7 @@ import * as ActionTypes from "../actions";
 const initialState = {
   isLoggedIn: !!localStorage.getItem("token"),
   token: localStorage.getItem("token"),
-  credentials: "",
+  credentials: localStorage.getItem("credential"),
   currentUser: {
     name: "user",
     username: "user",
@@ -38,6 +38,14 @@ const reducer = (state = initialState, action) => {
     return {
       ...state,
       currentUser: action.currentUser,
+      credentials: action.credentials,
+    };
+  }
+
+  if (action.type == ActionTypes.ADD_CREDENTIALS) {
+    localStorage.setItem("credential", action.credentials);
+    return {
+      ...state,
       credentials: action.credentials,
     };
   }

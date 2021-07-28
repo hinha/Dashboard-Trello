@@ -2,23 +2,36 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-const Home = ({ socket }) => {
-  const [statePerform, updatePerform] = useState({});
+const Home = ({ socket, dashboard }) => {
+  const [statePerform, updatePerform] = useState([]);
 
   useEffect(() => {
+    let mounted = true;
     if (socket !== null) {
       if (socket.socket !== null) {
         const item = socket.socket.tesKiremClick("performance");
-
-        updatePerform(item);
+        if (mounted) {
+          updatePerform(item);
+        }
       }
     }
-    return () => {};
-  }, [socket]);
+    let cardData = [];
+    if (statePerform.length === 0) {
+      if (Object.keys(dashboard).length === 0) {
+        cardData = [];
+      } else {
+        cardData = dashboard.card_category;
+        console.log(cardData);
+      }
+    } else {
+      cardData = statePerform;
+    }
 
-  // if (Object.keys(statePerform).length !== 0) {
-  //   console.log(statePerform, "");
-  // }
+    updatePerform(cardData);
+    // return () => (mounted = false);
+  }, [socket, dashboard]);
+
+  console.log(statePerform);
 
   return (
     <>
@@ -45,12 +58,12 @@ const Home = ({ socket }) => {
             <div className="col-12 col-sm-6 col-md-3">
               <div className="info-box">
                 <span className="info-box-icon bg-info elevation-1">
-                  <i className="fas fa-cog" />
+                  <i className="fas fa-flag" />
                 </span>
                 <div className="info-box-content">
                   <span className="info-box-text">Task TODO</span>
                   <span className="info-box-number">
-                    {statePerform.todoItem}
+                    {statePerform.length > 0 ? statePerform[0].count : 0}
                   </span>
                 </div>
               </div>
@@ -62,32 +75,36 @@ const Home = ({ socket }) => {
                 </span>
                 <div className="info-box-content">
                   <span className="info-box-text">Task In Progress</span>
-                  <span className="info-box-number">41,410</span>
+                  <span className="info-box-number">
+                    {statePerform.length > 0 ? statePerform[1].count : 0}
+                  </span>
                 </div>
               </div>
             </div>
             <div className="clearfix hidden-md-up" />
             <div className="col-12 col-sm-6 col-md-3">
               <div className="info-box mb-3">
-                <span className="info-box-icon bg-success elevation-1">
-                  <i className="fas fa-shopping-cart" />
+                <span className="info-box-icon bg-warning elevation-1">
+                  <i className="fas fa-vial" />
                 </span>
                 <div className="info-box-content">
-                  <span className="info-box-text">Task Done</span>
+                  <span className="info-box-text">Review/Testing</span>
                   <span className="info-box-number">
-                    {statePerform.doneItem}
+                    {statePerform.length > 0 ? statePerform[3].count : 0}
                   </span>
                 </div>
               </div>
             </div>
             <div className="col-12 col-sm-6 col-md-3">
               <div className="info-box mb-3">
-                <span className="info-box-icon bg-warning elevation-1">
-                  <i className="fas fa-users" />
+                <span className="info-box-icon bg-success elevation-1">
+                  <i className="fas fa-check-square" />
                 </span>
                 <div className="info-box-content">
-                  <span className="info-box-text">Report Bugs</span>
-                  <span className="info-box-number">2,000</span>
+                  <span className="info-box-text">Task Done</span>
+                  <span className="info-box-number">
+                    {statePerform.length > 0 ? statePerform[2].count : 0}
+                  </span>
                 </div>
               </div>
             </div>
@@ -167,6 +184,9 @@ const Home = ({ socket }) => {
 
 const mapStateToProps = (state) => ({
   socket: state.socket,
+  credentials: state.auth.credentials,
+  token: state.auth.token,
+  dashboard: state.dashboard.performance,
 });
 
 export default connect(mapStateToProps, null)(Home);

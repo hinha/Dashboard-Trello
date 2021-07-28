@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
-// import useWebSocket, { ReadyState } from "react-use-websocket";
 
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
@@ -11,10 +10,18 @@ import Attendence from "./../../pages/Attendence";
 import Home from "./../../pages/Home";
 
 import * as AuthService from "./../../services/profile";
+import * as DashboardService from "./../../services/dashboard";
 import * as ActionTypes from "../../store/actions";
 import Socket from "./socket";
 
-const Main = ({ token, onSocket, onUserLoad, onUserLogout }) => {
+const Main = ({
+  token,
+  onSocket,
+  onCredential,
+  onDashboard,
+  onUserLoad,
+  onUserLogout,
+}) => {
   const [appLoadingState, updateAppLoading] = useState(false);
   const [menusidebarState, updateMenusidebarState] = useState({
     isMenuSidebarCollapsed: false,
@@ -24,13 +31,24 @@ const Main = ({ token, onSocket, onUserLoad, onUserLogout }) => {
 
   useEffect(() => {
     updateAppLoading(true);
+    let mounted = true;
     const fetchProfile = async () => {
       try {
         const response = await AuthService.getProfile(token);
 
         onUserLoad({ ...response });
+        onCredential(response.credentials);
         setToken(response.credentials);
-        updateAppLoading(false);
+
+        const dashboard = await DashboardService.getDashboard(
+          token,
+          localStorage.getItem("credential")
+        );
+
+        if (mounted) {
+          onDashboard(dashboard);
+          updateAppLoading(false);
+        }
       } catch (error) {
         console.log(error);
         if (error.response) {
@@ -44,8 +62,8 @@ const Main = ({ token, onSocket, onUserLoad, onUserLogout }) => {
 
     fetchProfile();
 
-    return () => {};
-  }, [onUserLoad, onSocket]);
+    return () => (mounted = false);
+  }, [onUserLoad, onSocket, onCredential, onDashboard]);
 
   useEffect(() => {
     try {
@@ -105,14 +123,19 @@ const Main = ({ token, onSocket, onUserLoad, onUserLogout }) => {
 const mapStateToProps = (state) => ({
   user: state.auth.currentUser,
   token: state.auth.token,
+  performance: state.auth.performance,
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  onCredential: (credentials) =>
+    dispatch({ type: ActionTypes.ADD_CREDENTIALS, credentials }),
   onUserLoad: (user) =>
     dispatch({ type: ActionTypes.LOAD_USER, currentUser: user }),
   onUserLogout: () => dispatch({ type: ActionTypes.LOGOUT_USER }),
   onSocket: (socket) =>
     dispatch({ type: ActionTypes.ADD_SOCKET, socket: socket }),
+  onDashboard: (data) =>
+    dispatch({ type: ActionTypes.ADD_DATA, performance: data }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

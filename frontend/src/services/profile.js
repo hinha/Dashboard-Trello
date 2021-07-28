@@ -12,7 +12,9 @@ const authenticate = (token) => ({
 const url = `${apiBase}${apiLogin}`;
 
 export const getProfile = async (token) => {
-  const result = await axios.get(url, authenticate(token));
+  const result = await axios.get(url, authenticate(token)).then((response) => {
+    return response;
+  });
   return result.data;
 };
 

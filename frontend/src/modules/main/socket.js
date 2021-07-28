@@ -2,10 +2,15 @@ export default class Socket {
   constructor(userId, credentials) {
     this.userID = userId;
     this.credentials = credentials;
+
     this.state = {
       performance: {
-        todoItem: 0,
-        doneItem: 0,
+        card_category: [
+          {
+            label: "",
+            count: 0,
+          },
+        ],
       },
     };
     this.webSocketConnection = null;
@@ -32,10 +37,6 @@ export default class Socket {
   subscribeToSocketMessage() {
     this.setWebsocket();
 
-    if (this.webSocketConnection === null) {
-      return;
-    }
-
     this.webSocketConnection.onclose = () => {
       console.log("Your Connection is closed.");
       var that = this;
@@ -45,10 +46,7 @@ export default class Socket {
     };
 
     this.webSocketConnection.onopen = () => {
-      this.state.performance = {
-        doneItem: 1,
-        todoItem: 2,
-      };
+      this.state.performance = [];
     };
 
     this.webSocketConnection.onmessage = (event) => {
@@ -57,10 +55,7 @@ export default class Socket {
         switch (socketPayload.eventName) {
           case "response":
             if (socketPayload.eventItem === "performance") {
-              this.state.performance = {
-                doneItem: 1,
-                todoItem: 2,
-              };
+              this.state.performance.card_category = [];
             }
             break;
         }
@@ -70,21 +65,17 @@ export default class Socket {
     };
   }
 
-  tesKiremClick(state) {
-    if (this.webSocketConnection === null) {
-      return {};
-    }
-
+  tesKiremClick(method) {
     if (this.webSocketConnection.readyState === 0) {
       console.log(this.webSocketConnection.readyState, "ready");
       var that = this;
       setTimeout(function () {
-        that.tesKiremClick(state);
+        that.tesKiremClick(method);
       }, 1000);
     } else {
       this.webSocketConnection.send(
         JSON.stringify({
-          eventItem: state,
+          eventItem: method,
           eventName: "update",
           eventPayload: {
             userID: this.userID,
