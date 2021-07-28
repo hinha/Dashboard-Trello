@@ -3,10 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/hinha/PAM-Trello/app/handling"
-	cron_server "github.com/hinha/PAM-Trello/app/server/cron"
-	"github.com/hinha/PAM-Trello/app/trello"
-	gorm_logger "gorm.io/gorm/logger"
 	"math"
 	"os"
 	"os/signal"
@@ -20,11 +16,15 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	gorm_logger "gorm.io/gorm/logger"
 
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/accounts"
+	"github.com/hinha/PAM-Trello/app/handling"
 	"github.com/hinha/PAM-Trello/app/repository"
 	"github.com/hinha/PAM-Trello/app/server"
+	cron_server "github.com/hinha/PAM-Trello/app/server/cron"
+	"github.com/hinha/PAM-Trello/app/trello"
 	"github.com/hinha/PAM-Trello/app/util/authority"
 )
 

@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/hinha/PAM-Trello/app"
 	"gorm.io/gorm"
+
+	"github.com/hinha/PAM-Trello/app"
 )
 
 type trelloRepository struct {

@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hinha/PAM-Trello/vendor/github.com/dgrijalva/jwt-go"
-	"github.com/hinha/PAM-Trello/vendor/github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 
