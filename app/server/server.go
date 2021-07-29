@@ -119,7 +119,7 @@ func New(account accounts.Service, trello trello.Service, handlingInbox handling
 		g.GET("", dashboard.dashboardPage)
 		g.GET("/ws", dashboard.engine)
 		g.GET("/inbox", dashboard.inbox)
-		g.GET("/inbox/ws", dashboard.inboxSocket)
+		g.GET("/inbox/ws", dashboard.inboxSocket, dashboard.verify)
 		g.GET("/board/trello", dashboard.boardTrelloPage)
 		g.GET("/setting/details", dashboard.settingDetails)
 		g.GET("/setting/users", dashboard.settingUsers, csrfHeader, getToken)

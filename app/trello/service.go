@@ -1,11 +1,10 @@
 package trello
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/hinha/PAM-Trello/app/util/security"
 
 	"github.com/hinha/PAM-Trello/app"
+	"github.com/hinha/PAM-Trello/app/util/security"
 )
 
 type Service interface {
@@ -15,7 +14,8 @@ type Service interface {
 }
 
 type service struct {
-	trello app.TrelloRepository
+	trello  app.TrelloRepository
+	account app.AccountRepository
 
 	encrypt *security.BearerCipher
 }
@@ -34,19 +34,7 @@ func (s *service) Create(card *app.TrelloUserCard) error {
 }
 
 func (s *service) Authorize(key string) (interface{}, error) {
-	plain, err := s.encrypt.DecryptStringCBC(key)
-	if err != nil {
-		return nil, err
-	}
-
-	var decode map[string]interface{}
-	if err := json.Unmarshal([]byte(plain), &decode); err != nil {
-		return nil, err
-	}
-
-	// TODO: Need validation time expiration
-
-	return decode, nil
+	return security.Authorize(s.encrypt, key)
 }
 
 func (s *service) Performance(id string) (app.Performance, error) {
@@ -93,14 +81,24 @@ func (s *service) Performance(id string) (app.Performance, error) {
 		"right": "4%",
 	}
 	perform.Task = pieChart
-	// TODO: create chart visual daily
+
+	usrOnline, _ := s.account.GetOnlineStatus(id)
+	var onlineUsers []map[string]interface{}
+	for _, user := range usrOnline {
+		onlineUsers = append(onlineUsers, map[string]interface{}{
+			"last_active": user.LastLogin,
+			"username":    user.Username,
+			"name":        user.Name,
+		})
+	}
+	perform.OnlineUsers = onlineUsers
 
 	return perform, nil
 }
 
-func New(trello app.TrelloRepository) *service {
+func New(trello app.TrelloRepository, account app.AccountRepository) *service {
 	CipherIv := "Programmer is not robot"
 	CipherHeader := "sangatrahasiabro[HEHE]"
 	CipherKey := "Harga kopi ditentukan oleh kualitas"
-	return &service{trello: trello, encrypt: security.NewCipher(CipherIv, CipherHeader, CipherKey)}
+	return &service{trello: trello, account: account, encrypt: security.NewCipher(CipherIv, CipherHeader, CipherKey)}
 }

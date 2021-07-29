@@ -10,6 +10,7 @@ import (
 )
 
 type Service interface {
+	Authorize(key string) (interface{}, error)
 	AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accounts, string, error)
 	GetProfile(ctx context.Context, id string) (*app.Accounts, string, error)
 	NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) error
@@ -24,6 +25,11 @@ type service struct {
 	account app.AccountRepository
 
 	encrypt *security.BearerCipher
+}
+
+// Authorize Bearer cipher Cbc
+func (s *service) Authorize(key string) (interface{}, error) {
+	return security.Authorize(s.encrypt, key)
 }
 
 func (s *service) AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accounts, string, error) {

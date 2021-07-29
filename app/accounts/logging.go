@@ -12,6 +12,18 @@ type loggingService struct {
 	next   Service
 }
 
+func (s *loggingService) Authorize(key string) (o interface{}, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"took":       time.Since(begin),
+			"length_key": len(key),
+			"err":        err,
+		}).Info("Authorize")
+	}(time.Now())
+
+	return s.next.Authorize(key)
+}
+
 func (s *loggingService) AuthLogin(ctx context.Context, in *app.LoginInput) (o *app.Accounts, token string, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{

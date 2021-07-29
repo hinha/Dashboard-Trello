@@ -161,17 +161,17 @@ func main() {
 			tR = repository.NewTrelloRepository(db)
 
 			var ts trello.Service
-			ts = trello.New(tR)
+			ts = trello.New(tR, accountRepo)
 			ts = trello.NewLoggingService(logger.WithField("component", "trelloClient"), ts)
-
-			// Handling
-			var inbox handling.ServiceInbox
-			inbox = handling.NewHandlingInbox(accountRepo)
-			go inbox.Run()
 
 			var as accounts.Service
 			as = accounts.NewService(authRepo, accountRepo)
 			as = accounts.NewLoggingService(logger.WithField("component", "accounts"), as)
+
+			// Handling
+			var inbox handling.ServiceInbox
+			inbox = handling.NewHandlingInbox(ts, as, accountRepo)
+			go inbox.Run()
 
 			srv := server.New(as, ts, inbox, logger.WithField("component", "http"))
 
@@ -204,8 +204,11 @@ func main() {
 			var tR app.TrelloRepository
 			tR = repository.NewTrelloRepository(db)
 
+			var accountRepo app.AccountRepository
+			accountRepo = repository.NewAccountRepository(db)
+
 			var ts trello.Service
-			ts = trello.New(tR)
+			ts = trello.New(tR, accountRepo)
 			ts = trello.NewLoggingService(logger.WithField("component", "trelloClient"), ts)
 
 			worker := cron_server.New(ts, logger.WithField("component", "worker"))

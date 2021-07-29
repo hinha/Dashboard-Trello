@@ -60,6 +60,7 @@ type Performance struct {
 	Daily         interface{}    `json:"daily"`
 	Task          interface{}    `json:"task"`
 	TimelineGantt interface{}    `json:"timeline_gantt"`
+	OnlineUsers   interface{}    `json:"online_users"`
 }
 
 type CardGroupBy struct {

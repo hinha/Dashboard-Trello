@@ -316,16 +316,20 @@ func (h *dashboardHandler) inbox(ctx echo.Context) error {
 
 func (h *dashboardHandler) inboxSocket(ctx echo.Context) error {
 
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+
 	// Upgrading the HTTP connection socket connection
 	connection, err := upgraded.Upgrade(ctx.Response(), ctx.Request(), nil)
 	if err != nil {
 		h.logger.Error(err)
 		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 	}
-	//get := ctx.Get("context")
-	//userID := get.(map[interface{}]interface{})["user_id"].(string)
+	claim := verify.(map[string]interface{})
 
-	h.socket.CreateNewSocketUser(connection, "userID")
+	h.socket.CreateNewSocketUser(connection, claim["id"].(string))
 
 	return nil
 }
@@ -364,4 +368,19 @@ func (h *dashboardHandler) settingUsers(ctx echo.Context) error {
 	data.Data["AccessControl"] = control
 
 	return ctx.Render(http.StatusOK, "dashboard.html", data)
+}
+
+func (h *dashboardHandler) verify(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		credential := ctx.QueryParam("key")
+
+		data, err := h.s.Authorize(credential)
+		if err != nil {
+			return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{"error": err.Error()})
+		}
+
+		ctx.Set("verify", data)
+
+		return next(ctx)
+	}
 }
