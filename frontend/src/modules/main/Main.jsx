@@ -110,6 +110,7 @@ const Main = ({
           <Switch>
             <Route exact path="/dashboard" component={Home} />
             <Route exact path="/dashboard/attendence" component={Attendence} />
+            <Route exact path="/analytics" component={Attendence} />
           </Switch>
         </div>
         <Footer />

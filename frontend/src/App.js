@@ -18,6 +18,12 @@ function App() {
           <PrivateRoute path="/dashboard">
             <Main />
           </PrivateRoute>
+          <PrivateRoute path="/analytics">
+            <Main />
+          </PrivateRoute>
+          <PrivateRoute path="/settings">
+            <Main />
+          </PrivateRoute>
         </Switch>
       </Router>
     </>

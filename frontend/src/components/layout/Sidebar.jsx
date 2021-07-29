@@ -3,7 +3,11 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { SidebarData } from "../SidebarData";
+import {
+  SidebarDataPermormance,
+  SidebarDataAnalytics,
+  SidebarDataSettings,
+} from "../SidebarData";
 
 function Sidebar({ user }) {
   return (
@@ -44,14 +48,77 @@ function Sidebar({ user }) {
             data-accordion="false"
           >
             <li className="nav-item has-treeview menu-open">
-              <Link className="nav-link active">
+              <NavLink
+                className="nav-link"
+                activeClassName="active"
+                to="/dashboard"
+              >
+                <i className="nav-icon fas fa-tachometer-alt" />
                 <p>
-                  Dashboard
-                  <i className="nav-icon fas fa-tachometer-alt" />
+                  Dashboard <i className="fas fa-angle-left right"></i>
                 </p>
-              </Link>
+              </NavLink>
               <ul className="nav nav-treeview">
-                {SidebarData.map((item, index) => {
+                {SidebarDataPermormance.map((item, index) => {
+                  return (
+                    <li className="nav-item" key={index}>
+                      <NavLink
+                        exact
+                        to={item.path}
+                        activeClassName="active"
+                        className="nav-link"
+                      >
+                        {item.icon}
+                        <p>{item.title}</p>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+            <li className="nav-item has-treeview menu-open">
+              <NavLink
+                className="nav-link"
+                activeClassName="active"
+                to="/analytics"
+              >
+                <i className="nav-icon fas fa-chart-pie"></i>
+                <p>
+                  Analytics<i className="fas fa-angle-left right"></i>
+                </p>
+              </NavLink>
+              <ul className="nav nav-treeview">
+                {SidebarDataAnalytics.map((item, index) => {
+                  return (
+                    <li className="nav-item" key={index}>
+                      <NavLink
+                        exact
+                        to={item.path}
+                        activeClassName="active"
+                        className="nav-link"
+                      >
+                        {item.icon}
+                        <p>{item.title}</p>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+            <li className="nav-item has-treeview menu-open">
+              <NavLink
+                className="nav-link"
+                activeClassName="active"
+                to="/settings"
+              >
+                <i className="nav-icon fas fa-cog"></i>
+                <p>
+                  Settings
+                  <i className="fas fa-angle-left right"></i>
+                </p>
+              </NavLink>
+              <ul className="nav nav-treeview">
+                {SidebarDataSettings.map((item, index) => {
                   return (
                     <li className="nav-item" key={index}>
                       <NavLink

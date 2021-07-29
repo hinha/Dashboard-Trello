@@ -4,14 +4,7 @@ export default class Socket {
     this.credentials = credentials;
 
     this.state = {
-      performance: {
-        card_category: [
-          {
-            label: "",
-            count: 0,
-          },
-        ],
-      },
+      performance: {},
     };
     this.webSocketConnection = null;
   }
@@ -55,7 +48,11 @@ export default class Socket {
         switch (socketPayload.eventName) {
           case "response":
             if (socketPayload.eventItem === "performance") {
-              this.state.performance.card_category = [];
+              this.state.performance = socketPayload.eventPayload.performance;
+              localStorage.setItem(
+                "performance",
+                JSON.stringify(socketPayload.eventPayload.performance)
+              );
             }
             break;
         }
@@ -65,7 +62,7 @@ export default class Socket {
     };
   }
 
-  tesKiremClick(method) {
+  tesKiremClick(method, credentials) {
     if (this.webSocketConnection.readyState === 0) {
       console.log(this.webSocketConnection.readyState, "ready");
       var that = this;
@@ -77,14 +74,11 @@ export default class Socket {
         JSON.stringify({
           eventItem: method,
           eventName: "update",
-          eventPayload: {
-            userID: this.userID,
-            message: "ping dari browser",
-          },
+          token: credentials,
         })
       );
     }
 
-    return this.state.performance;
+    return JSON.parse(localStorage.getItem("performance"));
   }
 }

@@ -1,37 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import ReactECharts from "echarts-for-react";
+import Moment from "react-moment";
 
-const Home = ({ socket, dashboard }) => {
-  const [statePerform, updatePerform] = useState([]);
+const Home = ({ socket, dashboard, credentials }) => {
+  const [statePerform, updatePerform] = useState({});
+  const [lineChart, setLineChart] = useState(null);
+  const [taskChart, setTaskChart] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
     if (socket !== null) {
       if (socket.socket !== null) {
-        const item = socket.socket.tesKiremClick("performance");
-        if (mounted) {
+        try {
+          const item = socket.socket.tesKiremClick("performance", credentials);
           updatePerform(item);
+          setLineChart(item.daily);
+          setTaskChart(item.task);
+        } catch (e) {
+          updatePerform(dashboard);
+          setLineChart(dashboard.daily);
+          setTaskChart(dashboard.task);
         }
       }
     }
-    let cardData = [];
-    if (statePerform.length === 0) {
-      if (Object.keys(dashboard).length === 0) {
-        cardData = [];
-      } else {
-        cardData = dashboard.card_category;
-        console.log(cardData);
-      }
-    } else {
-      cardData = statePerform;
-    }
 
-    updatePerform(cardData);
     // return () => (mounted = false);
   }, [socket, dashboard]);
-
-  console.log(statePerform);
 
   return (
     <>
@@ -63,7 +58,9 @@ const Home = ({ socket, dashboard }) => {
                 <div className="info-box-content">
                   <span className="info-box-text">Task TODO</span>
                   <span className="info-box-number">
-                    {statePerform.length > 0 ? statePerform[0].count : 0}
+                    {Object.keys(statePerform).length > 0
+                      ? statePerform.card_category[0].count
+                      : 0}
                   </span>
                 </div>
               </div>
@@ -76,7 +73,9 @@ const Home = ({ socket, dashboard }) => {
                 <div className="info-box-content">
                   <span className="info-box-text">Task In Progress</span>
                   <span className="info-box-number">
-                    {statePerform.length > 0 ? statePerform[1].count : 0}
+                    {Object.keys(statePerform).length > 0
+                      ? statePerform.card_category[1].count
+                      : 0}
                   </span>
                 </div>
               </div>
@@ -90,7 +89,9 @@ const Home = ({ socket, dashboard }) => {
                 <div className="info-box-content">
                   <span className="info-box-text">Review/Testing</span>
                   <span className="info-box-number">
-                    {statePerform.length > 0 ? statePerform[3].count : 0}
+                    {Object.keys(statePerform).length > 0
+                      ? statePerform.card_category[3].count
+                      : 0}
                   </span>
                 </div>
               </div>
@@ -103,7 +104,9 @@ const Home = ({ socket, dashboard }) => {
                 <div className="info-box-content">
                   <span className="info-box-text">Task Done</span>
                   <span className="info-box-number">
-                    {statePerform.length > 0 ? statePerform[2].count : 0}
+                    {Object.keys(statePerform).length > 0
+                      ? statePerform.card_category[2].count
+                      : 0}
                   </span>
                 </div>
               </div>
@@ -112,17 +115,53 @@ const Home = ({ socket, dashboard }) => {
           <div className="row">
             <div className="col-md-8">
               <div className="card">
-                <div className="card-body">
-                  <h4 className="mt-0 header-title mb-4">Daily Task</h4>
-                  <div id="distSentiment" />
+                <div className="card-header">
+                  <h3 className="card-title">Distribution</h3>
+                  <div className="card-tools">
+                    <button
+                      type="button"
+                      className="btn btn-tool"
+                      data-card-widget="collapse"
+                    >
+                      <i className="fas fa-minus" />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-tool"
+                      data-card-widget="remove"
+                    >
+                      <i className="fas fa-times" />
+                    </button>
+                  </div>
+                </div>
+                <div className="card-body p-0">
+                  {lineChart ? <ReactECharts option={lineChart} /> : ""}
                 </div>
               </div>
             </div>
             <div className="col-md-4">
               <div className="card">
-                <div className="card-body">
-                  <h4 className="mt-0 header-title mb-4">Task</h4>
-                  <div id="pieSentiment" />
+                <div className="card-header">
+                  <h3 className="card-title">Task</h3>
+                  <div className="card-tools">
+                    <button
+                      type="button"
+                      className="btn btn-tool"
+                      data-card-widget="collapse"
+                    >
+                      <i className="fas fa-minus" />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-tool"
+                      data-card-widget="remove"
+                    >
+                      <i className="fas fa-times" />
+                    </button>
+                  </div>
+                </div>
+                <div className="card-body" style={{ height: "300px" }}>
+                  {taskChart ? <ReactECharts option={taskChart} /> : ""}
                 </div>
               </div>
             </div>
@@ -130,9 +169,79 @@ const Home = ({ socket, dashboard }) => {
           <div className="row">
             <div className="col-md-6">
               <div className="card">
-                <div className="card-body">
-                  <h4 className="mt-0 header-title mb-4">Gant cahrt</h4>
-                  <div id="gantCahrt" />
+                <div className="card-header">
+                  <h3 className="card-title">Recent Activity</h3>
+                  <div className="card-tools">
+                    <button
+                      type="button"
+                      className="btn btn-tool"
+                      data-card-widget="collapse"
+                    >
+                      <i className="fas fa-minus" />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-tool"
+                      data-card-widget="remove"
+                    >
+                      <i className="fas fa-times" />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  className="card-body"
+                  style={{ maxHeight: "500px", overflowY: "auto" }}
+                >
+                  <div className="post">
+                    <div className="user-block">
+                      <img
+                        className="img-circle img-bordered-sm"
+                        src="../../dist/img/user1-128x128.jpg"
+                        alt="user image"
+                      />
+                      <span className="username">
+                        <a href="#">Jonathan Burke Jr.</a>
+                      </span>
+                      <span className="description">
+                        Shared publicly - 7:45 PM today
+                      </span>
+                    </div>
+                    <p>
+                      Lorem ipsum represents a long-held tradition for
+                      designers, typographers and the like. Some people hate it
+                      and argue for its demise, but others ignore.
+                    </p>
+                    <p>
+                      <a href="#" className="link-black text-sm">
+                        <i className="fas fa-link mr-1"></i> Demo File 1 v2
+                      </a>
+                    </p>
+                  </div>
+                  <div className="post">
+                    <div className="user-block">
+                      <img
+                        className="img-circle img-bordered-sm"
+                        src="../../dist/img/user1-128x128.jpg"
+                        alt="user image"
+                      />
+                      <span className="username">
+                        <a href="#">Jonathan Burke Jr.</a>
+                      </span>
+                      <span className="description">
+                        Shared publicly - 7:45 PM today
+                      </span>
+                    </div>
+                    <p>
+                      Lorem ipsum represents a long-held tradition for
+                      designers, typographers and the like. Some people hate it
+                      and argue for its demise, but others ignore.
+                    </p>
+                    <p>
+                      <a href="#" className="link-black text-sm">
+                        <i className="fas fa-link mr-1"></i> Demo File 1 v2
+                      </a>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -164,11 +273,27 @@ const Home = ({ socket, dashboard }) => {
                         <thead>
                           <tr>
                             <th>Name</th>
-                            <th>Status</th>
                             <th>Title</th>
+                            <th>Last active</th>
                           </tr>
                         </thead>
-                        <tbody />
+                        <tbody>
+                          {Object.keys(statePerform).length > 0 ? (
+                            statePerform.online_users.map((item, index) => {
+                              return (
+                                <tr key={index}>
+                                  <td>{item.name}</td>
+                                  <td>title</td>
+                                  <td>
+                                    <Moment fromNow>{item.last_active}</Moment>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          ) : (
+                            <tr />
+                          )}
+                        </tbody>
                       </table>
                     </div>
                   </div>
