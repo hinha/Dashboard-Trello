@@ -44,7 +44,7 @@ func (s *loggingService) Authorize(key string) (o interface{}, err error) {
 		}).Info("Authorize")
 	}(time.Now())
 
-	return s.next.Authorize(key), err
+	return s.next.Authorize(key)
 }
 
 // NewLoggingService returns a new instance of a logging Service.

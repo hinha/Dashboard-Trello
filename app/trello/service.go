@@ -50,26 +50,49 @@ func (s *service) Authorize(key string) (interface{}, error) {
 }
 
 func (s *service) Performance(id string) (app.Performance, error) {
+
+	dup := func(sample []app.CardCategory) []app.CardCategory {
+		var unique []app.CardCategory
+
+	sampleLoop:
+		for _, v := range sample {
+			for i, u := range unique {
+				if v.Label == u.Label {
+					unique[i] = v
+					continue sampleLoop
+				}
+			}
+			unique = append(unique, v)
+		}
+		return unique
+	}
 	var perform app.Performance
 
-	doneTask, err := s.trello.FindCardCategory(id, "DONE")
+	cards, err := s.trello.FindCardCategory(id)
 	if err != nil {
 		return perform, err
 	}
-	perform.Done = doneTask
 
-	progressTask, err := s.trello.FindCardCategory(id, "ON PROGRESS")
+	perform.CardCategory = dup(cards)
+
+	groupBy, err := s.trello.CategoryByDate(id)
 	if err != nil {
-		return perform, nil
+		return perform, err
 	}
-	perform.OnProgress = progressTask
 
-	todoTask, err := s.trello.FindCardCategory(id, "TODO")
-	if err != nil {
-		return perform, nil
+	lineChart := perform.LineChart(groupBy).JSON()
+	lineChart["grid"] = map[string]interface{}{
+		"left":  "3%",
+		"right": "4%",
 	}
-	perform.Todo = todoTask
+	perform.Daily = lineChart
 
+	pieChart := perform.PieChart(groupBy).JSON()
+	pieChart["grid"] = map[string]interface{}{
+		"left":  "3%",
+		"right": "4%",
+	}
+	perform.Task = pieChart
 	// TODO: create chart visual daily
 
 	return perform, nil
