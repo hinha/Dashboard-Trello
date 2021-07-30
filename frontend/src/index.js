@@ -5,6 +5,7 @@ import App from "./App";
 import store from "./store/index";
 
 import "./i18n";
+import "./assets/css/custom.css";
 
 ReactDOM.render(
   // <React.StrictMode>

@@ -8,6 +8,7 @@ import Sidebar from "./../../components/layout/Sidebar";
 import PageLoading from "./../../components/page-loading/PageLoading";
 import Attendence from "./../../pages/Attendence";
 import Home from "./../../pages/Home";
+import Settings from "./../../pages/Settings";
 
 import * as AuthService from "./../../services/profile";
 import * as DashboardService from "./../../services/dashboard";
@@ -111,6 +112,7 @@ const Main = ({
             <Route exact path="/dashboard" component={Home} />
             <Route exact path="/dashboard/attendence" component={Attendence} />
             <Route exact path="/analytics" component={Attendence} />
+            <Route exact path="/settings/users" component={Settings} />
           </Switch>
         </div>
         <Footer />
