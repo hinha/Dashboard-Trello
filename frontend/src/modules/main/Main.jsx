@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect as connectRedux } from "react-redux";
+import {
+  connect as websocketConnect,
+  disconnect,
+  send,
+} from "@giantmachines/redux-websocket";
 
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
@@ -14,22 +19,24 @@ import SettingsUser from "../../pages/SettingsUser";
 import * as AuthService from "./../../services/profile";
 import * as DashboardService from "./../../services/dashboard";
 import * as ActionTypes from "../../store/actions";
-import Socket from "./socket";
+import { getConnected } from "../../store/reducers/socket";
+// import Socket from "./socket";
 
 const Main = ({
+  connected,
   token,
-  onSocket,
   onCredential,
   onDashboard,
   onUserLoad,
   onUserLogout,
+  connect,
 }) => {
   const [appLoadingState, updateAppLoading] = useState(false);
   const [menusidebarState, updateMenusidebarState] = useState({
     isMenuSidebarCollapsed: false,
   });
 
-  const [getToken, setToken] = useState("");
+  // const [getToken, setToken] = useState("");
 
   useEffect(() => {
     updateAppLoading(true);
@@ -40,7 +47,6 @@ const Main = ({
 
         onUserLoad({ ...response });
         onCredential(response.credentials);
-        setToken(response.credentials);
 
         const dashboard = await DashboardService.getDashboard(
           token,
@@ -58,27 +64,21 @@ const Main = ({
             onUserLogout();
           }
         }
-        updateAppLoading(true);
+        // updateAppLoading(true);
       }
     };
 
     fetchProfile();
 
-    return () => (mounted = false);
-  }, [onUserLoad, onSocket, onCredential, onDashboard]);
-
-  useEffect(() => {
-    try {
-      if (getToken !== "") {
-        const Sock = new Socket("userID", getToken);
-        Sock.subscribeToSocketMessage();
-        onSocket(Sock);
-      }
-    } catch (e) {
-      console.error(e, "errr");
+    if (connected === undefined || connected === false) {
+      connect(
+        "ws://localhost:8080/dashboard/inbox/ws?key=" +
+          localStorage.getItem("credential")
+      );
     }
-    return () => {};
-  }, [getToken]);
+
+    return () => (mounted = false);
+  }, [connected, onUserLoad, onCredential, onDashboard]);
 
   const toggleMenuSidebar = () => {
     updateMenusidebarState({
@@ -129,6 +129,7 @@ const mapStateToProps = (state) => ({
   user: state.auth.currentUser,
   token: state.auth.token,
   performance: state.auth.performance,
+  connected: getConnected(state.socket),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -137,10 +138,14 @@ const mapDispatchToProps = (dispatch) => ({
   onUserLoad: (user) =>
     dispatch({ type: ActionTypes.LOAD_USER, currentUser: user }),
   onUserLogout: () => dispatch({ type: ActionTypes.LOGOUT_USER }),
-  onSocket: (socket) =>
-    dispatch({ type: ActionTypes.ADD_SOCKET, socket: socket }),
   onDashboard: (data) =>
     dispatch({ type: ActionTypes.ADD_DATA, performance: data }),
+
+  connect: (url) =>
+    dispatch(websocketConnect(url, ActionTypes.WEBSOCKET_PREFIX)),
+  disconnect: () => dispatch(disconnect(ActionTypes.WEBSOCKET_PREFIX)),
+  onSendMessage: (message) =>
+    dispatch(send(message, ActionTypes.WEBSOCKET_PREFIX)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connectRedux(mapStateToProps, mapDispatchToProps)(Main);
