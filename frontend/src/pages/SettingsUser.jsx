@@ -1,21 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import Moment from "react-moment";
 
-function Settings() {
+import * as SettingService from "../services/setting";
+
+function Settings({ token, credentials }) {
+  const [userSetting, setUserSetting] = useState(null);
+
+  useEffect(() => {
+    const fetchSetting = async () => {
+      const result = await SettingService.getSettingUser(token, credentials);
+      setUserSetting(result);
+      console.log(result);
+    };
+    fetchSetting();
+  }, []);
+  console.log("userSetting", userSetting);
+
   return (
     <>
       <div className="content-header">
         <div className="container-fluid">
           <div className="row mb-2">
             <div className="col-sm-6">
-              <h1 className="m-0">Settings</h1>
+              <h1 className="m-0">Settings User</h1>
             </div>
             <div className="col-sm-6">
               <ol className="breadcrumb float-sm-right">
                 <li className="breadcrumb-item">
                   <Link to="/dashboard">Home</Link>
                 </li>
-                <li className="breadcrumb-item active">Settings</li>
+                <li className="breadcrumb-item active">Settings User</li>
               </ol>
             </div>
           </div>
@@ -285,28 +301,31 @@ function Settings() {
                           <table className="table table-head-fixed text-nowrap">
                             <thead>
                               <tr>
-                                <th>ID</th>
-                                <th>User</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Reason</th>
+                                <th>No</th>
+                                <th>Board Name</th>
+                                <th>Board ID</th>
+                                <th>Member ID</th>
+                                <th>CreatedAt</th>
                               </tr>
                             </thead>
                             <tbody>
-                              <tr>
-                                <td>183</td>
-                                <td>John Doe</td>
-                                <td>11-7-2014</td>
-                                <td>
-                                  <span className="tag tag-success">
-                                    Approved
-                                  </span>
-                                </td>
-                                <td>
-                                  Bacon ipsum dolor sit amet salami venison
-                                  chicken flank fatback doner.
-                                </td>
-                              </tr>
+                              {userSetting ? (
+                                userSetting.trello_user.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{(index += 1)}</td>
+                                      <td>{item.board_name}</td>
+                                      <td>{item.board_id}</td>
+                                      <td>{item.card_member_id}</td>
+                                      <td>
+                                        <Moment toNow>{item.created_at}</Moment>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                              ) : (
+                                <tr></tr>
+                              )}
                             </tbody>
                           </table>
                         </div>
@@ -329,7 +348,23 @@ function Settings() {
                                 className="form-control select2"
                                 style={{ width: "100%" }}
                                 id="opt-select-user"
-                              ></select>
+                              >
+                                {userSetting ? (
+                                  userSetting.user.map((item, index) => {
+                                    return (
+                                      <option
+                                        selected="selected"
+                                        key={index}
+                                        value={item.username}
+                                      >
+                                        {item.id} - {item.name}
+                                      </option>
+                                    );
+                                  })
+                                ) : (
+                                  <option />
+                                )}
+                              </select>
                             </div>
                             <div className="form-group">
                               <label>Board Name</label>
@@ -373,4 +408,10 @@ function Settings() {
   );
 }
 
-export default Settings;
+const mapStateToProps = (state) => ({
+  socket: state.socket,
+  credentials: state.auth.credentials,
+  token: state.auth.token,
+});
+
+export default connect(mapStateToProps, null)(Settings);

@@ -24,6 +24,7 @@ const reducer = (state = initialState, action) => {
 
   if (action.type === ActionTypes.LOGOUT_USER) {
     localStorage.removeItem("token");
+    localStorage.removeItem("performance");
     return {
       ...state,
       isLoggedIn: false,

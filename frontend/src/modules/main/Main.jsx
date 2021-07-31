@@ -8,7 +8,8 @@ import Sidebar from "./../../components/layout/Sidebar";
 import PageLoading from "./../../components/page-loading/PageLoading";
 import Attendence from "./../../pages/Attendence";
 import Home from "./../../pages/Home";
-import Settings from "./../../pages/Settings";
+import SettingsDetail from "../../pages/SettingsDetail";
+import SettingsUser from "../../pages/SettingsUser";
 
 import * as AuthService from "./../../services/profile";
 import * as DashboardService from "./../../services/dashboard";
@@ -112,7 +113,8 @@ const Main = ({
             <Route exact path="/dashboard" component={Home} />
             <Route exact path="/dashboard/attendence" component={Attendence} />
             <Route exact path="/analytics" component={Attendence} />
-            <Route exact path="/settings/users" component={Settings} />
+            <Route exact path="/settings" component={SettingsDetail} />
+            <Route exact path="/settings/users" component={SettingsUser} />
           </Switch>
         </div>
         <Footer />
