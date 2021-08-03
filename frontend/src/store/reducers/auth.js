@@ -10,6 +10,8 @@ const initialState = {
     email: "mail@example.com",
     picture: null,
   },
+  isArn: !!localStorage.getItem("arn"),
+  arnData: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -40,6 +42,15 @@ const reducer = (state = initialState, action) => {
       ...state,
       currentUser: action.currentUser,
       credentials: action.credentials,
+    };
+  }
+
+  if (action.type === ActionTypes.ARN_USER) {
+    localStorage.setItem("arn", JSON.stringify(action.arnList));
+    return {
+      ...state,
+      isArn: true,
+      arnData: action.arnList,
     };
   }
 

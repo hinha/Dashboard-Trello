@@ -11,8 +11,8 @@ import Footer from "./footer/Footer";
 import Header from "./header/Header";
 import Sidebar from "./../../components/layout/Sidebar";
 import PageLoading from "./../../components/page-loading/PageLoading";
-import Attendence from "./../../pages/Attendence";
 import Home from "./../../pages/Home";
+import Attendence from "./../../pages/Attendence";
 import SettingsDetail from "../../pages/SettingsDetail";
 import SettingsUser from "../../pages/SettingsUser";
 
@@ -28,6 +28,7 @@ const Main = ({
   onCredential,
   onDashboard,
   onUserLoad,
+  onArn,
   onUserLogout,
   connect,
 }) => {
@@ -35,6 +36,7 @@ const Main = ({
   const [menusidebarState, updateMenusidebarState] = useState({
     isMenuSidebarCollapsed: false,
   });
+  const [arnState, updateArnState] = useState([]);
 
   // const [getToken, setToken] = useState("");
 
@@ -47,6 +49,7 @@ const Main = ({
 
         onUserLoad({ ...response });
         onCredential(response.credentials);
+        onArn(response.arn);
 
         const dashboard = await DashboardService.getDashboard(
           token,
@@ -56,15 +59,15 @@ const Main = ({
         if (mounted) {
           onDashboard(dashboard);
           updateAppLoading(false);
+          updateArnState(response.arn);
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         if (error.response) {
           if (error.response.status === 401) {
             onUserLogout();
           }
         }
-        // updateAppLoading(true);
       }
     };
 
@@ -78,7 +81,7 @@ const Main = ({
     }
 
     return () => (mounted = false);
-  }, [connected, onUserLoad, onCredential, onDashboard]);
+  }, [connected, onUserLoad, onArn, onCredential, onDashboard]);
 
   const toggleMenuSidebar = () => {
     updateMenusidebarState({
@@ -99,6 +102,71 @@ const Main = ({
     document.getElementById("root").classList.add("sidebar-open");
     document.getElementById("root").classList.remove("sidebar-collapse");
   }
+
+  let Router = (
+    <Switch>
+      {arnState ? (
+        arnState.map((item, key) => {
+          item = item.toLowerCase();
+          const menu = item.split(":");
+
+          let route;
+          switch (menu[0]) {
+            case "dashboard":
+              if (menu[1] === "performance") {
+                route = (
+                  <Route exact path="/dashboard" component={Home} key={key} />
+                );
+              } else if (menu[1] === "attendance") {
+                route = (
+                  <Route
+                    exact
+                    path="/dashboard/attendence"
+                    component={Attendence}
+                    key={key}
+                  />
+                );
+              } else {
+                <Route
+                  exact
+                  path="/dashboard/employee"
+                  component={Attendence}
+                  key={key}
+                />;
+              }
+              break;
+            case "user":
+              if (menu[1] === "detail") {
+                route = (
+                  <Route
+                    exact
+                    path="/settings"
+                    component={SettingsDetail}
+                    key={key}
+                  />
+                );
+              } else if (menu[1] === "manage") {
+                route = (
+                  <Route
+                    exact
+                    path="/settings/users"
+                    component={SettingsUser}
+                    key={key}
+                  />
+                );
+              }
+              break;
+          }
+
+          if (route) {
+            return route;
+          }
+        })
+      ) : (
+        <div />
+      )}
+    </Switch>
+  );
   let template;
 
   if (appLoadingState) {
@@ -108,15 +176,7 @@ const Main = ({
       <>
         <Header toggleMenuSidebar={toggleMenuSidebar} />
         <Sidebar />
-        <div className="content-wrapper">
-          <Switch>
-            <Route exact path="/dashboard" component={Home} />
-            <Route exact path="/dashboard/attendence" component={Attendence} />
-            <Route exact path="/analytics" component={Attendence} />
-            <Route exact path="/settings" component={SettingsDetail} />
-            <Route exact path="/settings/users" component={SettingsUser} />
-          </Switch>
-        </div>
+        <div className="content-wrapper">{Router}</div>
         <Footer />
       </>
     );
@@ -140,6 +200,8 @@ const mapDispatchToProps = (dispatch) => ({
   onUserLogout: () => dispatch({ type: ActionTypes.LOGOUT_USER }),
   onDashboard: (data) =>
     dispatch({ type: ActionTypes.ADD_DATA, performance: data }),
+
+  onArn: (arnList) => dispatch({ type: ActionTypes.ARN_USER, arnList }),
 
   connect: (url) =>
     dispatch(websocketConnect(url, ActionTypes.WEBSOCKET_PREFIX)),
