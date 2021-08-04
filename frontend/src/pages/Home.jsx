@@ -15,13 +15,14 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
   const [taskChart, setTaskChart] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
     if (connected === true) {
       onSendMessage({
         eventItem: "performance",
         eventName: "update",
       });
 
-      if (performance.messages.length > 0) {
+      if (performance.messages.length > 0 && mounted) {
         const onmessage = performance.messages.filter(
           (msg) => msg.type === "INCOMING"
         );
@@ -30,6 +31,10 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
           updatePerform(eventPayload.performance);
           setLineChart(eventPayload.performance.daily);
           setTaskChart(eventPayload.performance.task);
+        } else if (onmessage[0].data.eventItem == "open") {
+          updatePerform(dashboard);
+          setLineChart(dashboard.daily);
+          setTaskChart(dashboard.task);
         }
       }
     } else {
@@ -37,6 +42,8 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
       setLineChart(dashboard.daily);
       setTaskChart(dashboard.task);
     }
+
+    return () => (mounted = false);
   }, [onSendMessage, dashboard]);
 
   return (
