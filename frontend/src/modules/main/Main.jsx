@@ -49,7 +49,12 @@ const Main = ({
 
         onUserLoad({ ...response });
         onCredential(response.credentials);
-        onArn(response.arn);
+
+        let newArn = [];
+        for (var i = 0; i < response.arn.length; i++) {
+          newArn.push(response.arn[i].toLowerCase());
+        }
+        onArn(newArn);
 
         const dashboard = await DashboardService.getDashboard(
           token,

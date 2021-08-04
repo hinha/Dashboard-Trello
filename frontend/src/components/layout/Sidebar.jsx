@@ -9,7 +9,7 @@ import {
   SidebarDataSettings,
 } from "../SidebarData";
 
-function Sidebar({ user }) {
+function Sidebar({ user, arn }) {
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
       {/* Brand Logo */}
@@ -60,19 +60,21 @@ function Sidebar({ user }) {
               </NavLink>
               <ul className="nav nav-treeview">
                 {SidebarDataPermormance.map((item, index) => {
-                  return (
-                    <li className="nav-item" key={index}>
-                      <NavLink
-                        exact
-                        to={item.path}
-                        activeClassName="active"
-                        className="nav-link"
-                      >
-                        {item.icon}
-                        <p>{item.title}</p>
-                      </NavLink>
-                    </li>
-                  );
+                  if (arn.includes(item.lable)) {
+                    return (
+                      <li className="nav-item" key={index}>
+                        <NavLink
+                          exact
+                          to={item.path}
+                          activeClassName="active"
+                          className="nav-link"
+                        >
+                          {item.icon}
+                          <p>{item.title}</p>
+                        </NavLink>
+                      </li>
+                    );
+                  }
                 })}
               </ul>
             </li>
@@ -119,19 +121,21 @@ function Sidebar({ user }) {
               </NavLink>
               <ul className="nav nav-treeview">
                 {SidebarDataSettings.map((item, index) => {
-                  return (
-                    <li className="nav-item" key={index}>
-                      <NavLink
-                        exact
-                        to={item.path}
-                        activeClassName="active"
-                        className="nav-link"
-                      >
-                        {item.icon}
-                        <p>{item.title}</p>
-                      </NavLink>
-                    </li>
-                  );
+                  if (arn.includes(item.lable)) {
+                    return (
+                      <li className="nav-item" key={index}>
+                        <NavLink
+                          exact
+                          to={item.path}
+                          activeClassName="active"
+                          className="nav-link"
+                        >
+                          {item.icon}
+                          <p>{item.title}</p>
+                        </NavLink>
+                      </li>
+                    );
+                  }
                 })}
               </ul>
             </li>
@@ -146,6 +150,7 @@ function Sidebar({ user }) {
 
 const mapStateToProps = (state) => ({
   user: state.auth.currentUser,
+  arn: state.auth.arnData,
 });
 
 export default connect(mapStateToProps, null)(Sidebar);
