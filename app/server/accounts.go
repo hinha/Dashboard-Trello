@@ -329,7 +329,7 @@ func (h *dashboardHandler) inboxSocket(ctx echo.Context) error {
 	}
 	claim := verify.(map[string]interface{})
 
-	h.socket.CreateNewSocketUser(connection, claim["id"].(string))
+	h.socket.CreateNewSocketUser(connection, claim["id"].(string), claim["role"].(string))
 
 	return nil
 }

@@ -82,6 +82,28 @@ func (r *trelloRepository) CategoryByDate(id string) ([]app.CardGroupBy, error) 
 	return unique(test), nil
 }
 
+func (r *trelloRepository) ListTrelloUser() ([]*app.Trello, error) {
+	var trello []*app.Trello
+	err := r.db.Table("trello").Find(&trello).Error
+	return trello, err
+}
+
+func (r *trelloRepository) StoreUser(in app.TrelloAddMember) (app.TrelloAddMember, error) {
+	// need to validate only admin can added
+	return in, r.db.Create(&app.Trello{
+		BoardName:    in.BoardName,
+		BoardID:      in.BoardID,
+		CardMemberID: in.MemberID,
+		AccountID:    in.UserID,
+	}).Error
+}
+
+func (r *trelloRepository) FindMemberID(id string) (*app.Trello, error) {
+	trelloAccount := new(app.Trello)
+	err := r.db.Find(trelloAccount, "card_member_id = ?", id).Error
+	return trelloAccount, err
+}
+
 func unique(sample []app.CardGroupBy) []app.CardGroupBy {
 	var unique []app.CardGroupBy
 sampleLoop:

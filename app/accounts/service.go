@@ -12,7 +12,7 @@ import (
 type Service interface {
 	Authorize(key string) (interface{}, error)
 	AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accounts, string, error)
-	GetProfile(ctx context.Context, id string) (*app.Accounts, string, error)
+	GetProfile(ctx context.Context, id string) (*app.Accounts, []string, string, error)
 	NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) error
 	ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error)
 	DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) error
@@ -120,20 +120,27 @@ func (s *service) NewAccessControlList(ctx context.Context, adminId string, role
 	return fmt.Errorf("something error when assign permission")
 }
 
-func (s *service) GetProfile(ctx context.Context, id string) (*app.Accounts, string, error) {
+// GetProfile ...
+// return value: app.Accounts, []resource_permission, secret payload, error
+func (s *service) GetProfile(ctx context.Context, id string) (*app.Accounts, []string, string, error) {
 	account, err := s.account.FindID(id)
 	if err != nil {
-		return account, "", err
+		return account, nil, "", err
 	}
 
-	payload := account.Payload()
+	role, err := s.auth.GetRole(account.ID)
+	if err != nil {
+		return nil, nil, "", fmt.Errorf("access denied")
+	}
+
+	payload := account.Payload(role)
 	bytes, _ := json.Marshal(payload)
 
 	secret, err := s.encrypt.EncryptStringCBC(bytes)
 	if err != nil {
-		return account, "", err
+		return account, nil, "", err
 	}
-	return account, secret, nil
+	return account, account.ResourcePermission(role), secret, nil
 }
 
 func NewService(auth app.AuthRepository, account app.AccountRepository) *service {

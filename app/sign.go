@@ -113,12 +113,41 @@ func (m *LoginInput) RefreshJwt(oldToken string) (string, error) {
 	return rt, nil
 }
 
-func (m *Accounts) Payload() interface{} {
+func (m *Accounts) Payload(role string) interface{} {
 	return map[string]interface{}{
 		"email": m.Email,
 		"id":    m.ID,
+		"role":  role,
 		"exp":   time.Now().Add(time.Hour * 24).Unix(),
 	}
+}
+
+func (m *Accounts) ResourcePermission(role string) []string {
+	var resource []string
+	switch role {
+	case "admin":
+		resource = append(resource, []string{
+			DashboardPerformance,
+			DashboardAttendance,
+			DashboardEmployee,
+			AnalyticsPage,
+			AnalyticsClustering,
+			SettingDetail,
+			SettingUser,
+		}...)
+	case "developer":
+		resource = append(resource, []string{
+			DashboardPerformance,
+			DashboardAttendance,
+			AnalyticsPage,
+			AnalyticsClustering,
+			SettingDetail,
+		}...)
+	default:
+		return resource
+	}
+
+	return resource
 }
 
 const (
@@ -132,6 +161,16 @@ const (
 	PermListEmployee       = "listEmployee"
 	PermAttendance         = "readWriteAttendance"
 	PermUserDetails        = "readUpdateUserDetails"
+)
+
+const (
+	DashboardPerformance = "dashboard:Performance"
+	DashboardAttendance  = "dashboard:attendance"
+	DashboardEmployee    = "dashboard:employee"
+	AnalyticsPage        = "analytics:summary"
+	AnalyticsClustering  = "analytics:clustering"
+	SettingDetail        = "user:detail"
+	SettingUser          = "user:manage"
 )
 
 var DeleteCookie = &http.Cookie{

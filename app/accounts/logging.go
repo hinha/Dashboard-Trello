@@ -37,7 +37,7 @@ func (s *loggingService) AuthLogin(ctx context.Context, in *app.LoginInput) (o *
 	return s.next.AuthLogin(ctx, in)
 }
 
-func (s *loggingService) GetProfile(ctx context.Context, id string) (o *app.Accounts, secret string, err error) {
+func (s *loggingService) GetProfile(ctx context.Context, id string) (o *app.Accounts, arn []string, secret string, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
 			"method":     "account",

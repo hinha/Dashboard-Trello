@@ -35,6 +35,30 @@ func (s *loggingService) Performance(id string) (o app.Performance, err error) {
 	return s.next.Performance(id)
 }
 
+func (s *loggingService) TrelloList(id string) (o app.TrelloItemList, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"took": time.Since(begin),
+			"user": id,
+			"err":  err,
+		}).Info("TrelloList")
+	}(time.Now())
+
+	return s.next.TrelloList(id)
+}
+
+func (s *loggingService) AddMember(id string, in app.TrelloAddMember) (err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"took": time.Since(begin),
+			"user": id,
+			"err":  err,
+		}).Info("AddMember")
+	}(time.Now())
+
+	return s.next.AddMember(id, in)
+}
+
 func (s *loggingService) Authorize(key string) (o interface{}, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{

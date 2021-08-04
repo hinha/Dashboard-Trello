@@ -11,6 +11,8 @@ type Service interface {
 	Authorize(key string) (interface{}, error)
 	Create(card *app.TrelloUserCard) error
 	Performance(id string) (app.Performance, error)
+	TrelloList(id string) (app.TrelloItemList, error)
+	AddMember(id string, in app.TrelloAddMember) error
 }
 
 type service struct {
@@ -20,6 +22,7 @@ type service struct {
 	encrypt *security.BearerCipher
 }
 
+// Create use by cron server
 func (s *service) Create(card *app.TrelloUserCard) error {
 	if card == nil {
 		return fmt.Errorf("error should be nil")
@@ -94,6 +97,37 @@ func (s *service) Performance(id string) (app.Performance, error) {
 	perform.OnlineUsers = onlineUsers
 
 	return perform, nil
+}
+
+func (s *service) TrelloList(id string) (app.TrelloItemList, error) {
+	var itemList app.TrelloItemList
+
+	account, err := s.account.ListAccount(id)
+	if err != nil {
+		return itemList, err
+	}
+	itemList.User = account
+
+	userTrello, err := s.trello.ListTrelloUser()
+	if err != nil {
+		return itemList, err
+	}
+	itemList.TrelloUser = userTrello
+
+	return itemList, nil
+}
+
+func (s *service) AddMember(id string, in app.TrelloAddMember) error {
+	record, err := s.trello.FindMemberID(in.MemberID)
+	if err != nil {
+		return fmt.Errorf("error when inserted data")
+	}
+
+	if record.CardMemberID == "" {
+		_, err := s.trello.StoreUser(in)
+		return err
+	}
+	return fmt.Errorf("user already registered")
 }
 
 func New(trello app.TrelloRepository, account app.AccountRepository) *service {

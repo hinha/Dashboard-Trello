@@ -4,6 +4,7 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -11,15 +12,19 @@ type TrelloRepository interface {
 	Store(in *TrelloUserCard) (*TrelloUserCard, error)
 	FindCardCategory(id string) ([]CardCategory, error)
 	CategoryByDate(id string) ([]CardGroupBy, error)
+	ListTrelloUser() ([]*Trello, error)
+	StoreUser(in TrelloAddMember) (TrelloAddMember, error)
+	FindMemberID(id string) (*Trello, error)
 }
 
 type Trello struct {
 	ID           uint64           `json:"id" gorm:"primary_key"`
 	BoardName    string           `json:"board_name" gorm:"type:varchar(50);not null"`
 	BoardID      string           `json:"board_id" gorm:"type:varchar(50);not null"`
-	CardMemberID string           `json:"-" gorm:"type:varchar(120);null;index:card_member_id_id_k"`
+	CardMemberID string           `json:"card_member_id" gorm:"type:varchar(120);null;index:card_member_id_id_k"`
 	AccountID    string           `json:"-" gorm:"type:varchar(50);null"`
-	CardItems    []TrelloUserCard `json:"card_items" gorm:"ForeignKey:CardMemberID;references:CardMemberID"`
+	CreatedAt    time.Time        `json:"created_at"`
+	CardItems    []TrelloUserCard `json:"-" gorm:"ForeignKey:CardMemberID;references:CardMemberID"`
 }
 
 func (Trello) TableName() string {
@@ -52,6 +57,11 @@ func (TrelloUserCard) TableName() string {
 type CardCategory struct {
 	Label string `json:"label"`
 	Count int    `json:"count"`
+}
+
+type TrelloItemList struct {
+	User       []*Accounts `json:"user"`
+	TrelloUser []*Trello   `json:"trello_user"`
 }
 
 type Performance struct {
@@ -190,6 +200,29 @@ func (m *Performance) removeDuplicateStr(strSlice []string) []string {
 		}
 	}
 	return list
+}
+
+type TrelloAddMember struct {
+	BoardName string            `json:"board_name"`
+	MemberID  string            `json:"member_id"`
+	UserID    string            `json:"user_id"`
+	BoardID   string            `json:"board_id"`
+	Errors    map[string]string `json:"errors"`
+}
+
+func (m *TrelloAddMember) Validate() bool {
+	m.Errors = make(map[string]string)
+
+	if strings.TrimSpace(m.BoardName) == "" {
+		m.Errors["board_name"] = "Please enter a board name"
+	} else if strings.TrimSpace(m.MemberID) == "" {
+		m.Errors["member_id"] = "Please enter a member id"
+	} else if strings.TrimSpace(m.UserID) == "" {
+		m.Errors["user_id"] = "Please enter a user id"
+	} else if strings.TrimSpace(m.BoardID) == "" {
+		m.Errors["board_id"] = "Please enter a board id"
+	}
+	return len(m.Errors) == 0
 }
 
 type CardCategoryType string

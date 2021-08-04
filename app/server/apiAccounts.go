@@ -73,7 +73,7 @@ func (h *apiAccountHandler) loginPerform(ctx echo.Context) error {
 
 func (h *apiAccountHandler) profileData(ctx echo.Context) error {
 	userID := ctx.Get("user_id").(string)
-	account, secret, err := h.s.GetProfile(ctx.Request().Context(), userID)
+	account, arn, secret, err := h.s.GetProfile(ctx.Request().Context(), userID)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 	}
@@ -81,6 +81,7 @@ func (h *apiAccountHandler) profileData(ctx echo.Context) error {
 		"name":        account.Name,
 		"username":    account.Username,
 		"credentials": secret,
+		"arn":         arn,
 	})
 }
 

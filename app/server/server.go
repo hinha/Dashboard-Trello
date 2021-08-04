@@ -85,6 +85,7 @@ func New(account accounts.Service, trello trello.Service, handlingInbox handling
 			dashboard := apiDashboardHandler{s: s.Trello, logger: s.Logger}
 			apiDashboard := api.Group("/dashboard", s.jwtConfigHeader(fallback), getToken, dashboard.verify)
 			apiDashboard.GET("/performance", dashboard.performance)
+			apiDashboard.GET("/settings/user", dashboard.userSetting)
 		}
 		{
 			account := accountHandler{s: s.Account}
@@ -126,7 +127,7 @@ func New(account accounts.Service, trello trello.Service, handlingInbox handling
 	}
 
 	r.GET("/", func(ctx echo.Context) error {
-		return ctx.Render(http.StatusOK, "index.html", nil)
+		return ctx.JSON(http.StatusOK, map[string]string{})
 	})
 
 	s.router = r

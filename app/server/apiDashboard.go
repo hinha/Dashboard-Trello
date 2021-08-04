@@ -30,6 +30,21 @@ func (h *apiDashboardHandler) performance(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, performance)
 }
 
+func (h *apiDashboardHandler) userSetting(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+	claim := verify.(map[string]interface{})
+
+	performance, err := h.s.TrelloList(claim["id"].(string))
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, performance)
+}
+
 func (h *apiDashboardHandler) verify(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		credential := ctx.QueryParam("key")

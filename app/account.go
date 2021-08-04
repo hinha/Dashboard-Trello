@@ -19,6 +19,7 @@ type AccountRepository interface {
 	AccessControlList() (AccessControl, error)
 	SetOnlineStatus(id string, status bool) error
 	GetOnlineStatus(Id string) ([]*Accounts, error)
+	ListAccount(ignoreID string) ([]*Accounts, error)
 }
 
 type AccountDetail struct {

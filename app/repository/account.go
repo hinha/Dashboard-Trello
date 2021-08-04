@@ -169,6 +169,14 @@ func (r *accountRepository) GetOnlineStatus(Id string) ([]*app.Accounts, error) 
 	return accounts, err
 }
 
+func (r *accountRepository) ListAccount(ignoreID string) ([]*app.Accounts, error) {
+	var accounts []*app.Accounts
+	err := r.db.Table("accounts").Select("id, name, username").Not(map[string]interface{}{
+		"id": []string{ignoreID},
+	}).Find(&accounts).Error
+	return accounts, err
+}
+
 func NewAccountRepository(db *gorm.DB) app.AccountRepository {
 	return &accountRepository{db: db, access: authority.New(authority.Options{DB: db, TablesPrefix: "authority_"})}
 }
