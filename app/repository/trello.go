@@ -11,8 +11,21 @@ type trelloRepository struct {
 	db *gorm.DB
 }
 
+// Store create data in table trello
+// includes duplicate data
 func (r *trelloRepository) Store(in *app.TrelloUserCard) (*app.TrelloUserCard, error) {
-	return in, r.db.Create(in).Error
+	trello := new(app.TrelloUserCard)
+	err := r.db.Find(trello, "card_id = ? and card_member_id = ?", in.CardID, in.CardMemberID).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	if trello.CardID == "" {
+		return in, r.db.Create(in).Error
+	} else {
+		return in, r.db.Model(&app.TrelloUserCard{}).Where("card_id = ?", in.CardID).Updates(in).Error
+	}
 }
 
 func (r *trelloRepository) FindCardCategory(id string) ([]app.CardCategory, error) {
