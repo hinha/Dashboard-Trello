@@ -427,6 +427,440 @@ func (x *Response) GetError() string {
 	return ""
 }
 
+type CardAnalyze struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CardId               string `protobuf:"bytes,1,opt,name=card_id,json=cardId,proto3" json:"card_id,omitempty"`
+	CardCategory         string `protobuf:"bytes,2,opt,name=card_category,json=cardCategory,proto3" json:"card_category,omitempty"`
+	CardName             string `protobuf:"bytes,3,opt,name=card_name,json=cardName,proto3" json:"card_name,omitempty"`
+	CardVotes            int64  `protobuf:"varint,4,opt,name=card_votes,json=cardVotes,proto3" json:"card_votes,omitempty"`
+	CountCheckItems      int64  `protobuf:"varint,5,opt,name=count_check_items,json=countCheckItems,proto3" json:"count_check_items,omitempty"`
+	CountCheckLists      int64  `protobuf:"varint,6,opt,name=count_check_lists,json=countCheckLists,proto3" json:"count_check_lists,omitempty"`
+	CheckItemsComplete   int64  `protobuf:"varint,7,opt,name=check_items_complete,json=checkItemsComplete,proto3" json:"check_items_complete,omitempty"`
+	CheckItemsIncomplete int64  `protobuf:"varint,8,opt,name=check_items_incomplete,json=checkItemsIncomplete,proto3" json:"check_items_incomplete,omitempty"`
+	CommentCount         int64  `protobuf:"varint,9,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
+	AttachmentsCount     int64  `protobuf:"varint,10,opt,name=attachments_count,json=attachmentsCount,proto3" json:"attachments_count,omitempty"`
+	Username             string `protobuf:"bytes,11,opt,name=username,proto3" json:"username,omitempty"`
+	CreatedAt            string `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+}
+
+func (x *CardAnalyze) Reset() {
+	*x = CardAnalyze{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_trello_proto_service_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CardAnalyze) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CardAnalyze) ProtoMessage() {}
+
+func (x *CardAnalyze) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_trello_proto_service_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CardAnalyze.ProtoReflect.Descriptor instead.
+func (*CardAnalyze) Descriptor() ([]byte, []int) {
+	return file_internal_trello_proto_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CardAnalyze) GetCardId() string {
+	if x != nil {
+		return x.CardId
+	}
+	return ""
+}
+
+func (x *CardAnalyze) GetCardCategory() string {
+	if x != nil {
+		return x.CardCategory
+	}
+	return ""
+}
+
+func (x *CardAnalyze) GetCardName() string {
+	if x != nil {
+		return x.CardName
+	}
+	return ""
+}
+
+func (x *CardAnalyze) GetCardVotes() int64 {
+	if x != nil {
+		return x.CardVotes
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetCountCheckItems() int64 {
+	if x != nil {
+		return x.CountCheckItems
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetCountCheckLists() int64 {
+	if x != nil {
+		return x.CountCheckLists
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetCheckItemsComplete() int64 {
+	if x != nil {
+		return x.CheckItemsComplete
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetCheckItemsIncomplete() int64 {
+	if x != nil {
+		return x.CheckItemsIncomplete
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetCommentCount() int64 {
+	if x != nil {
+		return x.CommentCount
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetAttachmentsCount() int64 {
+	if x != nil {
+		return x.AttachmentsCount
+	}
+	return 0
+}
+
+func (x *CardAnalyze) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *CardAnalyze) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type ClusterLabel struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name   string               `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Labels []*ClusterLabelValue `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty"`
+}
+
+func (x *ClusterLabel) Reset() {
+	*x = ClusterLabel{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_trello_proto_service_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClusterLabel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterLabel) ProtoMessage() {}
+
+func (x *ClusterLabel) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_trello_proto_service_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterLabel.ProtoReflect.Descriptor instead.
+func (*ClusterLabel) Descriptor() ([]byte, []int) {
+	return file_internal_trello_proto_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ClusterLabel) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ClusterLabel) GetLabels() []*ClusterLabelValue {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+type ClusterLabelValue struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Index int64 `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Value int64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+}
+
+func (x *ClusterLabelValue) Reset() {
+	*x = ClusterLabelValue{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_trello_proto_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClusterLabelValue) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterLabelValue) ProtoMessage() {}
+
+func (x *ClusterLabelValue) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_trello_proto_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterLabelValue.ProtoReflect.Descriptor instead.
+func (*ClusterLabelValue) Descriptor() ([]byte, []int) {
+	return file_internal_trello_proto_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ClusterLabelValue) GetIndex() int64 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *ClusterLabelValue) GetValue() int64 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+type CardOut struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CreatedAt          string  `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CheckItemsComplete int64   `protobuf:"varint,2,opt,name=check_items_complete,json=checkItemsComplete,proto3" json:"check_items_complete,omitempty"`
+	CountCheckItems    int64   `protobuf:"varint,3,opt,name=count_check_items,json=countCheckItems,proto3" json:"count_check_items,omitempty"`
+	CommentCount       int64   `protobuf:"varint,4,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
+	Average            float32 `protobuf:"fixed32,5,opt,name=average,proto3" json:"average,omitempty"`
+}
+
+func (x *CardOut) Reset() {
+	*x = CardOut{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_trello_proto_service_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CardOut) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CardOut) ProtoMessage() {}
+
+func (x *CardOut) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_trello_proto_service_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CardOut.ProtoReflect.Descriptor instead.
+func (*CardOut) Descriptor() ([]byte, []int) {
+	return file_internal_trello_proto_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CardOut) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *CardOut) GetCheckItemsComplete() int64 {
+	if x != nil {
+		return x.CheckItemsComplete
+	}
+	return 0
+}
+
+func (x *CardOut) GetCountCheckItems() int64 {
+	if x != nil {
+		return x.CountCheckItems
+	}
+	return 0
+}
+
+func (x *CardOut) GetCommentCount() int64 {
+	if x != nil {
+		return x.CommentCount
+	}
+	return 0
+}
+
+func (x *CardOut) GetAverage() float32 {
+	if x != nil {
+		return x.Average
+	}
+	return 0
+}
+
+type PamInput struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Data []*CardAnalyze `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *PamInput) Reset() {
+	*x = PamInput{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_trello_proto_service_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PamInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PamInput) ProtoMessage() {}
+
+func (x *PamInput) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_trello_proto_service_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PamInput.ProtoReflect.Descriptor instead.
+func (*PamInput) Descriptor() ([]byte, []int) {
+	return file_internal_trello_proto_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *PamInput) GetData() []*CardAnalyze {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type AnalyzeResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Card    []*CardOut      `protobuf:"bytes,1,rep,name=card,proto3" json:"card,omitempty"`
+	Cluster []*ClusterLabel `protobuf:"bytes,2,rep,name=cluster,proto3" json:"cluster,omitempty"`
+	Error   string          `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *AnalyzeResponse) Reset() {
+	*x = AnalyzeResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_trello_proto_service_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AnalyzeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnalyzeResponse) ProtoMessage() {}
+
+func (x *AnalyzeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_trello_proto_service_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnalyzeResponse.ProtoReflect.Descriptor instead.
+func (*AnalyzeResponse) Descriptor() ([]byte, []int) {
+	return file_internal_trello_proto_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AnalyzeResponse) GetCard() []*CardOut {
+	if x != nil {
+		return x.Card
+	}
+	return nil
+}
+
+func (x *AnalyzeResponse) GetCluster() []*ClusterLabel {
+	if x != nil {
+		return x.Cluster
+	}
+	return nil
+}
+
+func (x *AnalyzeResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_internal_trello_proto_service_proto protoreflect.FileDescriptor
 
 var file_internal_trello_proto_service_proto_rawDesc = []byte{
@@ -486,10 +920,75 @@ var file_internal_trello_proto_service_proto_rawDesc = []byte{
 	0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x1f, 0x0a, 0x0b, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x75, 0x70,
 	0x64, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x61, 0x73, 0x74,
 	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x32, 0x32, 0x0a, 0x06,
-	0x54, 0x72, 0x65, 0x6c, 0x6c, 0x6f, 0x12, 0x28, 0x0a, 0x07, 0x67, 0x65, 0x74, 0x43, 0x61, 0x72,
-	0x64, 0x12, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0xd4, 0x03, 0x0a,
+	0x0b, 0x43, 0x61, 0x72, 0x64, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65, 0x12, 0x17, 0x0a, 0x07,
+	0x63, 0x61, 0x72, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x63,
+	0x61, 0x72, 0x64, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x63, 0x61, 0x72, 0x64, 0x5f, 0x63, 0x61,
+	0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x63, 0x61,
+	0x72, 0x64, 0x43, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x61,
+	0x72, 0x64, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63,
+	0x61, 0x72, 0x64, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x61, 0x72, 0x64, 0x5f,
+	0x76, 0x6f, 0x74, 0x65, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x63, 0x61, 0x72,
+	0x64, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x5f,
+	0x63, 0x68, 0x65, 0x63, 0x6b, 0x5f, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x0f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x74, 0x65,
+	0x6d, 0x73, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x63, 0x68, 0x65, 0x63,
+	0x6b, 0x5f, 0x6c, 0x69, 0x73, 0x74, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0f, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4c, 0x69, 0x73, 0x74, 0x73, 0x12, 0x30,
+	0x0a, 0x14, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x5f, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x5f, 0x63, 0x6f,
+	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x12, 0x63, 0x68,
+	0x65, 0x63, 0x6b, 0x49, 0x74, 0x65, 0x6d, 0x73, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65,
+	0x12, 0x34, 0x0a, 0x16, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x5f, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x5f,
+	0x69, 0x6e, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x14, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x74, 0x65, 0x6d, 0x73, 0x49, 0x6e, 0x63, 0x6f,
+	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e,
+	0x74, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x63,
+	0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2b, 0x0a, 0x11, 0x61,
+	0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x18, 0x0a, 0x20, 0x01, 0x28, 0x03, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65,
+	0x6e, 0x74, 0x73, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72,
+	0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x61, 0x74, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x41, 0x74, 0x22, 0x52, 0x0a, 0x0c, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x4c, 0x61,
+	0x62, 0x65, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x2e, 0x0a, 0x06, 0x6c, 0x61, 0x62, 0x65, 0x6c,
+	0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6c,
+	0x75, 0x73, 0x74, 0x65, 0x72, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52,
+	0x06, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x22, 0x3f, 0x0a, 0x11, 0x43, 0x6c, 0x75, 0x73, 0x74,
+	0x65, 0x72, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x14, 0x0a, 0x05,
+	0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x69, 0x6e, 0x64,
+	0x65, 0x78, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xc5, 0x01, 0x0a, 0x07, 0x43, 0x61, 0x72,
+	0x64, 0x4f, 0x75, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x61, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x41, 0x74, 0x12, 0x30, 0x0a, 0x14, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x5f, 0x69, 0x74, 0x65,
+	0x6d, 0x73, 0x5f, 0x63, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x12, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x74, 0x65, 0x6d, 0x73, 0x43, 0x6f, 0x6d,
+	0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x63,
+	0x68, 0x65, 0x63, 0x6b, 0x5f, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x0f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x74, 0x65, 0x6d,
+	0x73, 0x12, 0x23, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e,
+	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x76, 0x65, 0x72, 0x61, 0x67,
+	0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x07, 0x61, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65,
+	0x22, 0x30, 0x0a, 0x08, 0x70, 0x61, 0x6d, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x24, 0x0a, 0x04,
+	0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x43, 0x61, 0x72, 0x64, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65, 0x52, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x22, 0x76, 0x0a, 0x0f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x20, 0x0a, 0x04, 0x63, 0x61, 0x72, 0x64, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x4f, 0x75,
+	0x74, 0x52, 0x04, 0x63, 0x61, 0x72, 0x64, 0x12, 0x2b, 0x0a, 0x07, 0x63, 0x6c, 0x75, 0x73, 0x74,
+	0x65, 0x72, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43,
+	0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x52, 0x07, 0x63, 0x6c, 0x75,
+	0x73, 0x74, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x32, 0x64, 0x0a, 0x06, 0x54, 0x72,
+	0x65, 0x6c, 0x6c, 0x6f, 0x12, 0x28, 0x0a, 0x07, 0x67, 0x65, 0x74, 0x43, 0x61, 0x72, 0x64, 0x12,
+	0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0d, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x30,
+	0x0a, 0x07, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65, 0x12, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x70, 0x61, 0x6d, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61,
+	0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
 	0x42, 0x16, 0x5a, 0x14, 0x61, 0x70, 0x70, 0x2f, 0x70, 0x62, 0x2f, 0x74, 0x72, 0x65, 0x6c, 0x6c,
 	0x6f, 0x3b, 0x74, 0x72, 0x65, 0x6c, 0x6c, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
@@ -506,24 +1005,36 @@ func file_internal_trello_proto_service_proto_rawDescGZIP() []byte {
 	return file_internal_trello_proto_service_proto_rawDescData
 }
 
-var file_internal_trello_proto_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_internal_trello_proto_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_internal_trello_proto_service_proto_goTypes = []interface{}{
-	(*Board)(nil),    // 0: api.Board
-	(*Request)(nil),  // 1: api.Request
-	(*Member)(nil),   // 2: api.Member
-	(*Card)(nil),     // 3: api.Card
-	(*Response)(nil), // 4: api.Response
+	(*Board)(nil),             // 0: api.Board
+	(*Request)(nil),           // 1: api.Request
+	(*Member)(nil),            // 2: api.Member
+	(*Card)(nil),              // 3: api.Card
+	(*Response)(nil),          // 4: api.Response
+	(*CardAnalyze)(nil),       // 5: api.CardAnalyze
+	(*ClusterLabel)(nil),      // 6: api.ClusterLabel
+	(*ClusterLabelValue)(nil), // 7: api.ClusterLabelValue
+	(*CardOut)(nil),           // 8: api.CardOut
+	(*PamInput)(nil),          // 9: api.pamInput
+	(*AnalyzeResponse)(nil),   // 10: api.analyzeResponse
 }
 var file_internal_trello_proto_service_proto_depIdxs = []int32{
-	0, // 0: api.Request.board:type_name -> api.Board
-	3, // 1: api.Response.data:type_name -> api.Card
-	1, // 2: api.Trello.getCard:input_type -> api.Request
-	4, // 3: api.Trello.getCard:output_type -> api.Response
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: api.Request.board:type_name -> api.Board
+	3,  // 1: api.Response.data:type_name -> api.Card
+	7,  // 2: api.ClusterLabel.labels:type_name -> api.ClusterLabelValue
+	5,  // 3: api.pamInput.data:type_name -> api.CardAnalyze
+	8,  // 4: api.analyzeResponse.card:type_name -> api.CardOut
+	6,  // 5: api.analyzeResponse.cluster:type_name -> api.ClusterLabel
+	1,  // 6: api.Trello.getCard:input_type -> api.Request
+	9,  // 7: api.Trello.analyze:input_type -> api.pamInput
+	4,  // 8: api.Trello.getCard:output_type -> api.Response
+	10, // 9: api.Trello.analyze:output_type -> api.analyzeResponse
+	8,  // [8:10] is the sub-list for method output_type
+	6,  // [6:8] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_internal_trello_proto_service_proto_init() }
@@ -592,6 +1103,78 @@ func file_internal_trello_proto_service_proto_init() {
 				return nil
 			}
 		}
+		file_internal_trello_proto_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CardAnalyze); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_trello_proto_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ClusterLabel); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_trello_proto_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ClusterLabelValue); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_trello_proto_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CardOut); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_trello_proto_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PamInput); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_trello_proto_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AnalyzeResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -599,7 +1182,7 @@ func file_internal_trello_proto_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_trello_proto_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -626,6 +1209,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TrelloClient interface {
 	GetCard(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	Analyze(ctx context.Context, in *PamInput, opts ...grpc.CallOption) (*AnalyzeResponse, error)
 }
 
 type trelloClient struct {
@@ -645,9 +1229,19 @@ func (c *trelloClient) GetCard(ctx context.Context, in *Request, opts ...grpc.Ca
 	return out, nil
 }
 
+func (c *trelloClient) Analyze(ctx context.Context, in *PamInput, opts ...grpc.CallOption) (*AnalyzeResponse, error) {
+	out := new(AnalyzeResponse)
+	err := c.cc.Invoke(ctx, "/api.Trello/analyze", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TrelloServer is the server API for Trello service.
 type TrelloServer interface {
 	GetCard(context.Context, *Request) (*Response, error)
+	Analyze(context.Context, *PamInput) (*AnalyzeResponse, error)
 }
 
 // UnimplementedTrelloServer can be embedded to have forward compatible implementations.
@@ -656,6 +1250,9 @@ type UnimplementedTrelloServer struct {
 
 func (*UnimplementedTrelloServer) GetCard(context.Context, *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCard not implemented")
+}
+func (*UnimplementedTrelloServer) Analyze(context.Context, *PamInput) (*AnalyzeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Analyze not implemented")
 }
 
 func RegisterTrelloServer(s *grpc.Server, srv TrelloServer) {
@@ -680,6 +1277,24 @@ func _Trello_GetCard_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Trello_Analyze_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PamInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrelloServer).Analyze(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Trello/Analyze",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrelloServer).Analyze(ctx, req.(*PamInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Trello_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "api.Trello",
 	HandlerType: (*TrelloServer)(nil),
@@ -687,6 +1302,10 @@ var _Trello_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "getCard",
 			Handler:    _Trello_GetCard_Handler,
+		},
+		{
+			MethodName: "analyze",
+			Handler:    _Trello_Analyze_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
