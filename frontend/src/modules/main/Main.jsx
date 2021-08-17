@@ -13,6 +13,7 @@ import Sidebar from "./../../components/layout/Sidebar";
 import PageLoading from "./../../components/page-loading/PageLoading";
 import Home from "./../../pages/Home";
 import Attendence from "./../../pages/Attendence";
+import KMedoids from "../../pages/KMedoids";
 import SettingsDetail from "../../pages/SettingsDetail";
 import SettingsUser from "../../pages/SettingsUser";
 
@@ -58,7 +59,7 @@ const Main = ({
 
         const dashboard = await DashboardService.getDashboard(
           token,
-          localStorage.getItem("credential")
+          response.credentials
         );
 
         if (mounted) {
@@ -84,7 +85,6 @@ const Main = ({
           localStorage.getItem("credential")
       );
     }
-
     return () => (mounted = false);
   }, [connected, onUserLoad, onArn, onCredential, onDashboard]);
 
@@ -160,6 +160,11 @@ const Main = ({
                   />
                 );
               }
+              break;
+            case "analytics":
+              route = (
+                <Route exact path="/analytics" component={KMedoids} key={key} />
+              );
               break;
           }
 
