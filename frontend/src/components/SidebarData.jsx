@@ -21,13 +21,8 @@ export const SidebarDataPermormance = [
 
 export const SidebarDataAnalytics = [
   {
-    title: "Summary",
+    title: "K-Medoids",
     path: "/analytics",
-    icon: <i className="far fa-circle nav-icon" />,
-  },
-  {
-    title: "PAM Result",
-    path: "/analytics/pam",
     icon: <i className="far fa-circle nav-icon" />,
   },
 ];

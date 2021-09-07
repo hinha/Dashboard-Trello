@@ -27,6 +27,8 @@ const reducer = (state = initialState, action) => {
   if (action.type === ActionTypes.LOGOUT_USER) {
     localStorage.removeItem("token");
     localStorage.removeItem("performance");
+    localStorage.removeItem("arn");
+    localStorage.removeItem("credential");
     return {
       ...state,
       isLoggedIn: false,
@@ -35,6 +37,7 @@ const reducer = (state = initialState, action) => {
         email: "mail@example.com",
         picture: null,
       },
+      credentials: null,
     };
   }
   if (action.type === ActionTypes.LOAD_USER) {

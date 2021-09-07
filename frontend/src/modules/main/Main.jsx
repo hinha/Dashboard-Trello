@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 import { connect as connectRedux } from "react-redux";
-import {
-  connect as websocketConnect,
-  disconnect,
-  send,
-} from "@giantmachines/redux-websocket";
 
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
@@ -19,25 +14,16 @@ import SettingsUser from "../../pages/SettingsUser";
 
 import * as AuthService from "./../../services/profile";
 import * as DashboardService from "./../../services/dashboard";
+import * as SettingService from "./../../services/setting";
 import * as ActionTypes from "../../store/actions";
-import { getConnected } from "../../store/reducers/socket";
-// import Socket from "./socket";
 
-const Main = ({
-  connected,
-  token,
-  onCredential,
-  onDashboard,
-  onUserLoad,
-  onArn,
-  onUserLogout,
-  connect,
-}) => {
+const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
   const [appLoadingState, updateAppLoading] = useState(false);
   const [menusidebarState, updateMenusidebarState] = useState({
     isMenuSidebarCollapsed: false,
   });
   const [arnState, updateArnState] = useState([]);
+  const [getCredential, setCredential] = useState("");
 
   // const [getToken, setToken] = useState("");
 
@@ -50,6 +36,7 @@ const Main = ({
 
         onUserLoad({ ...response });
         onCredential(response.credentials);
+        setCredential(response.credentials);
 
         let newArn = [];
         for (var i = 0; i < response.arn.length; i++) {
@@ -57,13 +44,7 @@ const Main = ({
         }
         onArn(newArn);
 
-        const dashboard = await DashboardService.getDashboard(
-          token,
-          response.credentials
-        );
-
         if (mounted) {
-          onDashboard(dashboard);
           updateAppLoading(false);
           updateArnState(response.arn);
         }
@@ -79,19 +60,29 @@ const Main = ({
 
     fetchProfile();
 
-    if (connected === undefined || connected === false) {
-      connect(
-        "ws://localhost:8080/dashboard/inbox/ws?key=" +
-          localStorage.getItem("credential")
-      );
-    }
     return () => (mounted = false);
-  }, [connected, onUserLoad, onArn, onCredential, onDashboard]);
+  }, [onUserLoad, onArn, onCredential]);
 
   const toggleMenuSidebar = () => {
     updateMenusidebarState({
       isMenuSidebarCollapsed: !menusidebarState.isMenuSidebarCollapsed,
     });
+  };
+
+  const onClickSidebarApi = async (item, body = {}) => {
+    let data;
+    if (item == "performance") {
+      data = await DashboardService.getDashboard(token, getCredential);
+    } else if (item == SettingService.UPDATE_USER_SETTING) {
+      data = await SettingService.getSettingUser(token, getCredential);
+    } else if (item == SettingService.ADD_USER_SETTING) {
+      data = await SettingService.addSettingUser(token, getCredential, body);
+    } else if (item == SettingService.ROLE_USER_SETTING) {
+      data = await SettingService.roleSettingUser(token, getCredential, body);
+    } else if (item == SettingService.TRELLO_USER_SETTING) {
+      data = await SettingService.trelloSettingUser(token, getCredential, body);
+    }
+    return data;
   };
 
   document.getElementById("root").classList.remove("register-page");
@@ -120,14 +111,26 @@ const Main = ({
             case "dashboard":
               if (menu[1] === "performance") {
                 route = (
-                  <Route exact path="/dashboard" component={Home} key={key} />
+                  <Route
+                    exact
+                    path="/dashboard"
+                    render={(props) => (
+                      <Home {...props} onClickSidebarApi={onClickSidebarApi} />
+                    )}
+                    key={key}
+                  />
                 );
               } else if (menu[1] === "attendance") {
                 route = (
                   <Route
                     exact
                     path="/dashboard/attendence"
-                    component={Attendence}
+                    render={(props) => (
+                      <Attendence
+                        {...props}
+                        onClickSidebarApi={onClickSidebarApi}
+                      />
+                    )}
                     key={key}
                   />
                 );
@@ -155,7 +158,12 @@ const Main = ({
                   <Route
                     exact
                     path="/settings/users"
-                    component={SettingsUser}
+                    render={(props) => (
+                      <SettingsUser
+                        {...props}
+                        onClickSidebarApi={onClickSidebarApi}
+                      />
+                    )}
                     key={key}
                   />
                 );
@@ -198,8 +206,6 @@ const Main = ({
 const mapStateToProps = (state) => ({
   user: state.auth.currentUser,
   token: state.auth.token,
-  performance: state.auth.performance,
-  connected: getConnected(state.socket),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -208,16 +214,8 @@ const mapDispatchToProps = (dispatch) => ({
   onUserLoad: (user) =>
     dispatch({ type: ActionTypes.LOAD_USER, currentUser: user }),
   onUserLogout: () => dispatch({ type: ActionTypes.LOGOUT_USER }),
-  onDashboard: (data) =>
-    dispatch({ type: ActionTypes.ADD_DATA, performance: data }),
 
   onArn: (arnList) => dispatch({ type: ActionTypes.ARN_USER, arnList }),
-
-  connect: (url) =>
-    dispatch(websocketConnect(url, ActionTypes.WEBSOCKET_PREFIX)),
-  disconnect: () => dispatch(disconnect(ActionTypes.WEBSOCKET_PREFIX)),
-  onSendMessage: (message) =>
-    dispatch(send(message, ActionTypes.WEBSOCKET_PREFIX)),
 });
 
 export default connectRedux(mapStateToProps, mapDispatchToProps)(Main);
