@@ -87,16 +87,6 @@ function Settings({ onUserForm, onClickSidebarApi }) {
     event.preventDefault();
     setModalData(event.target.value);
     setModal(modalName);
-    // if (modalName) {
-    // let data;
-    // if (modalName === EDIT_USER_SETTING) {
-    //   let filter = getAccountList.filter(
-    //     (item) => item.id === event.target.value
-    //   );
-    //   data = filter.length > 0 ? filter[0] : {};
-    // }
-    // setModalData(data);
-    // }
   };
   return (
     <>
