@@ -20,7 +20,6 @@ import (
 
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/accounts"
-	"github.com/hinha/PAM-Trello/app/handling"
 	"github.com/hinha/PAM-Trello/app/repository"
 	"github.com/hinha/PAM-Trello/app/server"
 	cron_server "github.com/hinha/PAM-Trello/app/server/cron"
@@ -169,11 +168,11 @@ func main() {
 			as = accounts.NewLoggingService(logger.WithField("component", "accounts"), as)
 
 			// Handling
-			var inbox handling.ServiceInbox
-			inbox = handling.NewHandlingInbox(ts, as, accountRepo)
-			go inbox.Run()
+			//var inbox handling.ServiceInbox
+			//inbox = handling.NewHandlingInbox(ts, as, accountRepo)
+			//go inbox.Run()
 
-			srv := server.New(as, ts, inbox, logger.WithField("component", "http"))
+			srv := server.New(as, ts, logger.WithField("component", "http"))
 
 			go func() {
 				logger.WithFields(log.Fields{"transport": "http", "address": defaultPort}).Info("listening")

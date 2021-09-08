@@ -13,9 +13,10 @@ type Service interface {
 	Authorize(key string) (interface{}, error)
 	AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accounts, string, error)
 	GetProfile(ctx context.Context, id string) (*app.Accounts, []string, string, error)
-	NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) error
+	NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) (*app.Accounts, error)
 	ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error)
 	DeleteAccount(ctx context.Context, adminId string, roleName string, userID string, userName string) error
+	UpdateAccount(ctx context.Context, adminId string, roleName string, account app.UpdateAccount) error
 	GetAccessList(ctx context.Context) (app.AccessControl, error)
 	NewAccessControlList(ctx context.Context, adminId string, roleAdmin string, control *app.AssignRole) error
 }
@@ -63,23 +64,23 @@ func (s *service) AuthLogin(ctx context.Context, in *app.LoginInput) (*app.Accou
 	return account, token, nil
 }
 
-func (s *service) NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) error {
+func (s *service) NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) (*app.Accounts, error) {
 
 	record, err := s.account.FindUsername(in.Username)
 	if err != nil {
-		return fmt.Errorf("error when inserted data")
+		return nil, fmt.Errorf("error when inserted data")
 	}
 
 	if record.Username == "" {
 		err := s.account.Store(adminID, roleName, in)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// it success register data
-		return nil
+		return s.account.FindUsername(in.Username)
 	}
-	return fmt.Errorf("user already registered")
+	return nil, fmt.Errorf("user already registered")
 }
 
 func (s *service) ListAccount(ctx context.Context, adminId string, roleName string) ([]app.Accounts, error) {
@@ -93,6 +94,18 @@ func (s *service) DeleteAccount(ctx context.Context, adminId string, roleName st
 
 	if err := s.account.DeleteAccount(userID, userName); err != nil {
 		return fmt.Errorf("error when delete")
+	}
+
+	return nil
+}
+
+func (s *service) UpdateAccount(ctx context.Context, adminId string, roleName string, account app.UpdateAccount) error {
+	if err := s.account.CheckRole(adminId, roleName); err != nil {
+		return err
+	}
+
+	if err := s.account.UpdateAccount(account); err != nil {
+		return err
 	}
 
 	return nil

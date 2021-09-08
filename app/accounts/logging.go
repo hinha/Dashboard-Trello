@@ -51,7 +51,7 @@ func (s *loggingService) GetProfile(ctx context.Context, id string) (o *app.Acco
 	return s.next.GetProfile(ctx, id)
 }
 
-func (s *loggingService) NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) (err error) {
+func (s *loggingService) NewAccount(ctx context.Context, adminID string, roleName string, in *app.RegisterInput) (o *app.Accounts, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
 			"method":        "register",
@@ -96,6 +96,21 @@ func (s *loggingService) DeleteAccount(ctx context.Context, adminId string, role
 	return s.next.DeleteAccount(ctx, adminId, roleName, userID, userName)
 }
 
+func (s *loggingService) UpdateAccount(ctx context.Context, adminId string, roleName string, account app.UpdateAccount) (err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":     "update",
+			"took":       time.Since(begin),
+			"admin_id":   adminId,
+			"authorize":  roleName,
+			"tag_update": account.Name,
+			"err":        err,
+		}).Info("UpdateAccount")
+	}(time.Now())
+
+	return s.next.UpdateAccount(ctx, adminId, roleName, account)
+}
+
 func (s *loggingService) GetAccessList(ctx context.Context) (o app.AccessControl, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
@@ -116,7 +131,7 @@ func (s *loggingService) NewAccessControlList(ctx context.Context, adminId strin
 			"admin_id":  adminId,
 			"authorize": roleAdmin,
 			"err":       err,
-		}).Info("DeleteAccount")
+		}).Info("NewAccessControlList")
 	}(time.Now())
 
 	return s.next.NewAccessControlList(ctx, adminId, roleAdmin, control)

@@ -4,47 +4,27 @@ import { connect } from "react-redux";
 import ReactECharts from "echarts-for-react";
 import Moment from "react-moment";
 
-import { send } from "@giantmachines/redux-websocket";
-
-import * as ActionTypes from "../store/actions";
-import { getConnected } from "../store/reducers/socket";
-
-const Home = ({ connected, performance, onSendMessage, dashboard }) => {
+const Home = ({ onClickSidebarApi }) => {
   const [statePerform, updatePerform] = useState({});
   const [lineChart, setLineChart] = useState(null);
   const [taskChart, setTaskChart] = useState(null);
 
   useEffect(() => {
     let mounted = true;
-    if (connected === true) {
-      onSendMessage({
-        eventItem: "performance",
-        eventName: "update",
-      });
 
-      if (performance.messages.length > 0 && mounted) {
-        const onmessage = performance.messages.filter(
-          (msg) => msg.type === "INCOMING"
-        );
-        if (onmessage[0].data.eventItem === "performance") {
-          const eventPayload = onmessage[0].data.eventPayload;
-          updatePerform(eventPayload.performance);
-          setLineChart(eventPayload.performance.daily);
-          setTaskChart(eventPayload.performance.task);
-        } else if (onmessage[0].data.eventItem == "open") {
-          updatePerform(dashboard);
-          setLineChart(dashboard.daily);
-          setTaskChart(dashboard.task);
-        }
-      }
-    } else {
-      updatePerform(dashboard);
-      setLineChart(dashboard.daily);
-      setTaskChart(dashboard.task);
+    const fetchPerformance = async () => {
+      const result = await onClickSidebarApi("performance");
+      updatePerform(result);
+      setLineChart(result.daily);
+      setTaskChart(result.task);
+    };
+
+    if (mounted) {
+      fetchPerformance();
     }
 
     return () => (mounted = false);
-  }, [onSendMessage, dashboard]);
+  }, [onClickSidebarApi]);
 
   return (
     <>
@@ -184,6 +164,7 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
               </div>
             </div>
           </div>
+
           <div className="row">
             <div className="col-md-6">
               <div className="card">
@@ -296,7 +277,8 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {Object.keys(statePerform).length > 0 ? (
+                          {statePerform &&
+                            statePerform.online_users != null &&
                             statePerform.online_users.map((item, index) => {
                               return (
                                 <tr key={index}>
@@ -307,10 +289,7 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
                                   </td>
                                 </tr>
                               );
-                            })
-                          ) : (
-                            <tr />
-                          )}
+                            })}
                         </tbody>
                       </table>
                     </div>
@@ -328,14 +307,7 @@ const Home = ({ connected, performance, onSendMessage, dashboard }) => {
 const mapStateToProps = (state) => ({
   credentials: state.auth.credentials,
   token: state.auth.token,
-  dashboard: state.dashboard.performance,
-  connected: getConnected(state.socket),
-  performance: state.socket,
+  channel: state.socket,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  onSendMessage: (message) =>
-    dispatch(send(message, ActionTypes.WEBSOCKET_PREFIX)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, null)(Home);

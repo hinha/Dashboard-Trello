@@ -74,9 +74,18 @@ func (r *accountRepository) GetAccount(adminID string, roleName string) ([]app.A
 	}
 
 	var accounts []app.Accounts
-	err = r.db.Find(&accounts).Order("created_at desc").Limit(10).Error
+	err = r.db.Find(&accounts).Not(map[string]interface{}{"id": []string{adminID}}).
+		Order("created_at desc").
+		Limit(10).Error
 
-	return accounts, err
+	var newAccount []app.Accounts
+	for _, acc := range accounts {
+		if acc.ID != adminID {
+			newAccount = append(newAccount, acc)
+		}
+	}
+
+	return newAccount, err
 }
 
 func (r *accountRepository) CheckRole(adminID string, roleName string) error {
@@ -175,6 +184,16 @@ func (r *accountRepository) ListAccount(ignoreID string) ([]*app.Accounts, error
 		"id": []string{ignoreID},
 	}).Find(&accounts).Error
 	return accounts, err
+}
+
+func (r *accountRepository) UpdateAccount(account app.UpdateAccount) error {
+	err := r.db.Table("accounts").Where("id = ?", account.Id).Updates(app.Accounts{
+		Name:          account.Name,
+		Email:         account.Email,
+		SuspendStatus: account.Suspend,
+		UpdatedAt:     time.Now(),
+	}).Error
+	return err
 }
 
 func NewAccountRepository(db *gorm.DB) app.AccountRepository {

@@ -12,7 +12,7 @@ type Service interface {
 	Create(card *app.TrelloUserCard) error
 	Performance(id string) (app.Performance, error)
 	TrelloList(id string) (app.TrelloItemList, error)
-	AddMember(id string, in app.TrelloAddMember) error
+	AddMember(id string, in app.TrelloAddMember) (*app.Trello, error)
 }
 
 type service struct {
@@ -117,17 +117,19 @@ func (s *service) TrelloList(id string) (app.TrelloItemList, error) {
 	return itemList, nil
 }
 
-func (s *service) AddMember(id string, in app.TrelloAddMember) error {
+func (s *service) AddMember(id string, in app.TrelloAddMember) (*app.Trello, error) {
 	record, err := s.trello.FindMemberID(in.MemberID)
 	if err != nil {
-		return fmt.Errorf("error when inserted data")
+		return nil, fmt.Errorf("error when inserted data")
 	}
 
 	if record.CardMemberID == "" {
 		_, err := s.trello.StoreUser(in)
-		return err
+
+		record, err = s.trello.FindMemberID(in.MemberID)
+		return record, err
 	}
-	return fmt.Errorf("user already registered")
+	return nil, fmt.Errorf("user already registered")
 }
 
 func New(trello app.TrelloRepository, account app.AccountRepository) *service {
