@@ -4,14 +4,24 @@ import { connect } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import Moment from "react-moment";
 
-import { UPDATE_USER_SETTING } from "../services/setting";
+import {
+  UPDATE_USER_SETTING,
+  DEL_USER_SETTING,
+  EDIT_USER_SETTING,
+} from "../services/setting";
 import { FormTrello, FormUser, FormRole } from "../modules/form/SettingsForm";
+import ModalManager from "./../components/modal/Manager";
+import * as ActionTypes from "../store/actions";
 
-function Settings({ onClickSidebarApi }) {
+function Settings({ onUserForm, onClickSidebarApi }) {
+  const [mounted, setMounted] = useState(false);
   const [getTrelloUser, setTrelloUser] = useState([]);
   const [optTrelloUserSelected, setOptUserTrello] = useState([]);
   const [getAccessControl, setAccessControl] = useState({});
   const [getAccountList, setAccountList] = useState([]);
+
+  const [modalOpen, setModal] = useState("");
+  const [getModalData, setModalData] = useState();
 
   useEffect(() => {
     let mounted = true;
@@ -29,12 +39,14 @@ function Settings({ onClickSidebarApi }) {
       setOptUserTrello(optUser);
       setAccessControl(result.access);
       setAccountList(result.account);
+      onUserForm(result.account);
       setTrelloUser(result.trello.trello_user);
     };
     if (mounted) {
       fetchSetting();
     }
 
+    setMounted(mounted);
     return () => (mounted = false);
   }, [onClickSidebarApi]);
 
@@ -50,14 +62,42 @@ function Settings({ onClickSidebarApi }) {
     }
   };
 
-  // const trelloAddButton = (e) => {
-  //   e.preventDefault();
-  //   onSendMessage({
-  //     eventItem: "setting:trello",
-  //     eventName: "add",
-  //   });
-  // };
+  const onDeleteUserAccount = async (event) => {
+    event.preventDefault();
+    try {
+      await onClickSidebarApi(DEL_USER_SETTING, null, event.target.value);
+      if (event.target.value) {
+        let sp = event.target.value.split(",");
+        let delAction = getAccountList.filter(
+          (item) => (item.id !== sp[0]) & (item.username !== sp[1])
+        );
 
+        setAccountList(delAction);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onUpdateUserAccount = async (data) => {
+    return await onClickSidebarApi(EDIT_USER_SETTING, data, null);
+  };
+
+  const onOpenModal = (event, modalName) => {
+    event.preventDefault();
+    setModalData(event.target.value);
+    setModal(modalName);
+    // if (modalName) {
+    // let data;
+    // if (modalName === EDIT_USER_SETTING) {
+    //   let filter = getAccountList.filter(
+    //     (item) => item.id === event.target.value
+    //   );
+    //   data = filter.length > 0 ? filter[0] : {};
+    // }
+    // setModalData(data);
+    // }
+  };
   return (
     <>
       <div className="content-header">
@@ -80,6 +120,18 @@ function Settings({ onClickSidebarApi }) {
       <section className="content">
         <div className="container-fluid">
           <ToastContainer />
+          {mounted ? (
+            <ModalManager
+              closeFn={() => {
+                setModal(false);
+              }}
+              onUpdateUserAccount={onUpdateUserAccount}
+              modal={modalOpen}
+              properties={getModalData}
+            />
+          ) : (
+            "ohh"
+          )}
           <div className="row">
             <div className="col-md-12">
               <div className="row">
@@ -234,16 +286,18 @@ function Settings({ onClickSidebarApi }) {
                                         <button
                                           type="submit"
                                           className="btn btn-primary btn-sm"
-                                          value="${value.id},${value.username}"
+                                          onClick={(e) =>
+                                            onOpenModal(e, EDIT_USER_SETTING)
+                                          }
+                                          value={item.id}
                                         >
                                           EDIT
                                         </button>
                                         <button
                                           type="submit"
                                           className="btn btn-danger btn-sm"
-                                          value="${value.id},${value.username}"
-                                          data-toggle="modal"
-                                          data-target="#exampleModal"
+                                          onClick={onDeleteUserAccount}
+                                          value={item.id + "," + item.username}
                                         >
                                           DELETE
                                         </button>
@@ -360,4 +414,9 @@ const mapStateToProps = (state) => ({
   token: state.auth.token,
 });
 
-export default connect(mapStateToProps, null)(Settings);
+const mapDispatchToProps = (dispatch) => ({
+  onUserForm: (account) =>
+    dispatch({ type: ActionTypes.ADD_USER_FORM, account }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);

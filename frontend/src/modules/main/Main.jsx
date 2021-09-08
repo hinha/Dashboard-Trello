@@ -69,7 +69,7 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
     });
   };
 
-  const onClickSidebarApi = async (item, body = {}) => {
+  const onClickSidebarApi = async (item, body = {}, params = "") => {
     let data;
     if (item == "performance") {
       data = await DashboardService.getDashboard(token, getCredential);
@@ -77,6 +77,10 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
       data = await SettingService.getSettingUser(token, getCredential);
     } else if (item == SettingService.ADD_USER_SETTING) {
       data = await SettingService.addSettingUser(token, getCredential, body);
+    } else if (item == SettingService.EDIT_USER_SETTING) {
+      data = await SettingService.editSettingUser(token, getCredential, body);
+    } else if (item == SettingService.DEL_USER_SETTING) {
+      data = await SettingService.delSettingUser(token, getCredential, params);
     } else if (item == SettingService.ROLE_USER_SETTING) {
       data = await SettingService.roleSettingUser(token, getCredential, body);
     } else if (item == SettingService.TRELLO_USER_SETTING) {

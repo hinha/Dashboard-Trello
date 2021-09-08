@@ -64,6 +64,7 @@ export const FormTrello = (props) => {
       setSubmitting(true);
       const result = await handleRequestAPI(TRELLO_USER_SETTING, postData);
       handleFormToast(result);
+      setSubmitting(true);
       dispatch(result);
       setTimeout(() => {
         setSubmitting(false);
@@ -187,6 +188,7 @@ export const FormUser = (props) => {
       };
 
       const result = await handleRequestAPI(ADD_USER_SETTING, postData);
+      setSubmitting(true);
       handleFormToast(result);
       dispatch(result);
       setTimeout(() => {
@@ -285,6 +287,7 @@ export const FormRole = (props) => {
       };
 
       const result = await handleRequestAPI(ROLE_USER_SETTING, postData);
+      setSubmitting(true);
       handleFormToast(result);
       setTimeout(() => {
         setSubmitting(false);
