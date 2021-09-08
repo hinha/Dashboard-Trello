@@ -20,6 +20,7 @@ type AccountRepository interface {
 	SetOnlineStatus(id string, status bool) error
 	GetOnlineStatus(Id string) ([]*Accounts, error)
 	ListAccount(ignoreID string) ([]*Accounts, error)
+	UpdateAccount(account UpdateAccount) error
 }
 
 type AccountDetail struct {

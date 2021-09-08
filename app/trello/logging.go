@@ -47,7 +47,7 @@ func (s *loggingService) TrelloList(id string) (o app.TrelloItemList, err error)
 	return s.next.TrelloList(id)
 }
 
-func (s *loggingService) AddMember(id string, in app.TrelloAddMember) (err error) {
+func (s *loggingService) AddMember(id string, in app.TrelloAddMember) (o *app.Trello, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
 			"took": time.Since(begin),

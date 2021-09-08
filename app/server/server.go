@@ -16,25 +16,24 @@ import (
 
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/accounts"
-	"github.com/hinha/PAM-Trello/app/handling"
 	"github.com/hinha/PAM-Trello/app/trello"
 )
 
 type Server struct {
 	Account accounts.Service
 	Trello  trello.Service
-	Inbox   handling.ServiceInbox
+	//Inbox   handling.ServiceInbox
 
 	Logger *log.Entry
 
 	router *echo.Echo
 }
 
-func New(account accounts.Service, trello trello.Service, handlingInbox handling.ServiceInbox, logger *log.Entry) *Server {
+func New(account accounts.Service, trello trello.Service, logger *log.Entry) *Server {
 	s := &Server{
 		Account: account,
 		Trello:  trello,
-		Inbox:   handlingInbox,
+		//Inbox:   handlingInbox,
 
 		Logger: logger,
 	}
@@ -82,10 +81,16 @@ func New(account accounts.Service, trello trello.Service, handlingInbox handling
 			gAccountSub1.GET("", account.profileData)
 			gAccountSub1.POST("/refresh", account.refreshToken)
 
-			dashboard := apiDashboardHandler{s: s.Trello, logger: s.Logger}
+			dashboard := apiDashboardHandler{trello: s.Trello, account: s.Account, logger: s.Logger}
 			apiDashboard := api.Group("/dashboard", s.jwtConfigHeader(fallback), getToken, dashboard.verify)
 			apiDashboard.GET("/performance", dashboard.performance)
 			apiDashboard.GET("/settings/user", dashboard.userSetting)
+			apiDashboard.POST("/settings/user", dashboard.addUserSetting)
+			apiDashboard.PATCH("/settings/user", dashboard.updateUserSetting)
+			apiDashboard.DELETE("/settings/user", dashboard.deleteUserSetting)
+
+			apiDashboard.POST("/settings/user/trello", dashboard.trelloUserSetting)
+			apiDashboard.POST("/settings/user/role", dashboard.assignRoleAccount)
 		}
 		{
 			account := accountHandler{s: s.Account}
@@ -100,11 +105,12 @@ func New(account accounts.Service, trello trello.Service, handlingInbox handling
 		}
 	}
 	{
-		hub := NewHub()
-		go hub.Run()
-		dashboard := dashboardHandler{s: s.Account, socket: s.Inbox, logger: s.Logger, hub: hub}
-		g := r.Group("/dashboard")
-		//g.Use(s.jwtConfig(func(err error, c echo.Context) error {
+		// Deprecated
+		//hub := NewHub()
+		//go hub.Run()
+		//dashboard := dashboardHandler{trello: trello.Account, socket: trello.Inbox, logger: trello.Logger, hub: hub}
+		//g := r.Group("/dashboard")
+		//g.Use(trello.jwtConfig(func(err error, c echo.Context) error {
 		//
 		//	if errors.Is(err, middleware.ErrJWTMissing) || errors.Is(err, middleware.ErrJWTInvalid) {
 		//		return c.Redirect(http.StatusPermanentRedirect, "/accounts/login")
@@ -117,13 +123,11 @@ func New(account accounts.Service, trello trello.Service, handlingInbox handling
 		//	return nil
 		//}))
 
-		g.GET("", dashboard.dashboardPage)
-		g.GET("/ws", dashboard.engine)
-		g.GET("/inbox", dashboard.inbox)
-		g.GET("/inbox/ws", dashboard.inboxSocket, dashboard.verify)
-		g.GET("/board/trello", dashboard.boardTrelloPage)
-		g.GET("/setting/details", dashboard.settingDetails)
-		g.GET("/setting/users", dashboard.settingUsers, csrfHeader, getToken)
+		//g.GET("", dashboard.dashboardPage)
+		//g.GET("/inbox/ws", dashboard.inboxSocket, dashboard.verify)
+		//g.GET("/board/trello", dashboard.boardTrelloPage)
+		//g.GET("/setting/details", dashboard.settingDetails)
+		//g.GET("/setting/users", dashboard.settingUsers, csrfHeader, getToken)
 	}
 
 	r.GET("/", func(ctx echo.Context) error {

@@ -33,7 +33,7 @@ func TestValidTrelloShouldNil(t *testing.T) {
 	mockTrelloRepository := new(mocks.TrelloMock)
 	mockTrelloRepository.On("Store", valid).Return(valid, nil)
 
-	service := trello.New(mockTrelloRepository)
+	service := trello.New(mockTrelloRepository, nil)
 
 	err := service.Create(nil)
 	assert.NotNil(t, err, "Error should not nil")
@@ -46,7 +46,7 @@ func TestValidTrelloShouldAccept(t *testing.T) {
 	mockTrelloRepository := new(mocks.TrelloMock)
 	mockTrelloRepository.On("Store", userCardEmtpy).Return(userCardEmtpy, nil)
 
-	service := trello.New(mockTrelloRepository)
+	service := trello.New(mockTrelloRepository, nil)
 
 	err := service.Create(userCardEmtpy)
 	assert.Nil(t, err, "Error should be nil")

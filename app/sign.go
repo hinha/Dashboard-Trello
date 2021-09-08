@@ -52,6 +52,27 @@ func (m *LoginInput) Validate() bool {
 	return len(m.Errors) == 0
 }
 
+type UpdateAccount struct {
+	Id      string            `json:"id"`
+	Name    string            `json:"name"`
+	Email   string            `json:"email"`
+	Suspend bool              `json:"suspend"`
+	Errors  map[string]string `json:"-"`
+}
+
+func (m *UpdateAccount) Validate() bool {
+	m.Errors = make(map[string]string)
+
+	if strings.TrimSpace(m.Name) == "" {
+		m.Errors["Name"] = "Please enter a name"
+	} else if strings.TrimSpace(m.Email) == "" {
+		m.Errors["Email"] = "Please enter a email"
+	} else if strings.TrimSpace(m.Id) == "" {
+		m.Errors["id"] = "cannot be empty"
+	}
+	return len(m.Errors) == 0
+}
+
 func (m *LoginInput) ComparePassword(hashed string, secret string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(fmt.Sprintf("%s:%s", secret, m.Password)))
 	if err != nil {
@@ -130,7 +151,6 @@ func (m *Accounts) ResourcePermission(role string) []string {
 			DashboardPerformance,
 			DashboardAttendance,
 			DashboardEmployee,
-			AnalyticsPage,
 			AnalyticsClustering,
 			SettingDetail,
 			SettingUser,
@@ -139,7 +159,6 @@ func (m *Accounts) ResourcePermission(role string) []string {
 		resource = append(resource, []string{
 			DashboardPerformance,
 			DashboardAttendance,
-			AnalyticsPage,
 			AnalyticsClustering,
 			SettingDetail,
 		}...)

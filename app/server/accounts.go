@@ -104,7 +104,7 @@ func (h *accountHandler) registerAccount(ctx echo.Context) error {
 
 	roleName := ctx.Get("authorize").(string)
 	adminID := ctx.QueryParam("key")
-	err := h.s.NewAccount(ctx.Request().Context(), adminID, roleName, m)
+	_, err := h.s.NewAccount(ctx.Request().Context(), adminID, roleName, m)
 	if err != nil {
 		m.Errors["message"] = err.Error()
 		return ctx.JSON(http.StatusBadRequest, m.Errors)
@@ -299,19 +299,6 @@ func (h *dashboardHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx.Set("context", sess.Values)
 		return next(ctx)
 	}
-}
-
-func (h *dashboardHandler) inbox(ctx echo.Context) error {
-	data := &app.DashboardContent{
-		User: ctx.Get("context"),
-		Any:  make(map[string]string),
-		Page: make(map[string]int),
-	}
-
-	data.Any["Location"] = "/token/refresh"
-	data.Page["Menu"] = int(app.HomeMenuInbox)
-
-	return ctx.Render(http.StatusOK, "dashboard.html", data)
 }
 
 func (h *dashboardHandler) inboxSocket(ctx echo.Context) error {
