@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const KMedoids = () => {
   return (
-    <>
+    <div className="content-wrapper">
       <div className="content-header">
         <div className="container-fluid">
           <div className="row mb-2">
@@ -432,7 +432,7 @@ const KMedoids = () => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

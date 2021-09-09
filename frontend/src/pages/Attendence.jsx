@@ -3,7 +3,7 @@ import React from "react";
 const Attendence = (props) => {
   console.log(props);
   return (
-    <>
+    <div className="content-wrapper">
       {/* Content Header (Page header) */}
       <div className="content-header">
         <div className="container-fluid">
@@ -104,7 +104,7 @@ const Attendence = (props) => {
         {/* /.container-fluid */}
       </section>
       {/* /.content */}
-    </>
+    </div>
   );
 };
 

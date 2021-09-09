@@ -89,7 +89,7 @@ function Settings({ onUserForm, onClickSidebarApi }) {
     setModal(modalName);
   };
   return (
-    <>
+    <div className="content-wrapper">
       <div className="content-header">
         <div className="container-fluid">
           <div className="row mb-2">
@@ -395,7 +395,7 @@ function Settings({ onUserForm, onClickSidebarApi }) {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 

@@ -8,7 +8,7 @@ function SettingsDetail() {
   }, []);
 
   return (
-    <>
+    <div className="content-wrapper">
       <div className="content-header">
         <div className="container-fluid">
           <div className="row mb-2">
@@ -213,7 +213,7 @@ function SettingsDetail() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
