@@ -95,6 +95,33 @@ func (r *trelloRepository) CategoryByDate(id string) ([]app.CardGroupBy, error) 
 	return unique(test), nil
 }
 
+func (r *trelloRepository) FindByUserCard(accountID string) ([]app.TrelloUserCard, error) {
+	rows, err := r.db.Raw("SELECT tuc.card_id, tuc.card_name, tuc.card_category, tuc.card_member_name, "+
+		"tuc.card_url, tuc.card_created_at FROM trello_user_card tuc, trello t WHERE t.account_id = ? "+
+		"AND t.card_member_id = tuc.card_member_id ORDER BY tuc.card_created_at DESC;", accountID).Rows()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var cards []app.TrelloUserCard
+	for rows.Next() {
+		var card app.TrelloUserCard
+		if err := rows.Scan(&card.CardID,
+			&card.CardName,
+			&card.CardCategory,
+			&card.CardMemberName,
+			&card.CardUrl,
+			&card.CardCreatedAt); err != nil {
+			break
+		}
+
+		cards = append(cards, card)
+	}
+
+	return cards, nil
+}
+
 func (r *trelloRepository) ListCard() ([]app.TrelloUserCard, error) {
 	var cards []app.TrelloUserCard
 	err := r.db.Find(&cards).Order("created_at desc").Error

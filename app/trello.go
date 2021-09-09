@@ -12,6 +12,7 @@ type TrelloRepository interface {
 	Store(in *TrelloUserCard) (*TrelloUserCard, error)
 	FindCardCategory(id string) ([]CardCategory, error)
 	CategoryByDate(id string) ([]CardGroupBy, error)
+	FindByUserCard(accountID string) ([]TrelloUserCard, error)
 	ListCard() ([]TrelloUserCard, error)
 	ListTrelloUser() ([]*Trello, error)
 	StoreUser(in TrelloAddMember) (TrelloAddMember, error)
@@ -66,12 +67,13 @@ type TrelloItemList struct {
 }
 
 type Performance struct {
-	CardCategory  []CardCategory `json:"card_category"`
-	Product       interface{}    `json:"product"`
-	Daily         interface{}    `json:"daily"`
-	Task          interface{}    `json:"task"`
-	TimelineGantt interface{}    `json:"timeline_gantt"`
-	OnlineUsers   interface{}    `json:"online_users"`
+	CardCategory  []CardCategory   `json:"card_category"`
+	Product       interface{}      `json:"product"`
+	Daily         interface{}      `json:"daily"`
+	Task          interface{}      `json:"task"`
+	TimelineGantt interface{}      `json:"timeline_gantt"`
+	OnlineUsers   interface{}      `json:"online_users"`
+	CardActivity  []TrelloUserCard `json:"card_activity"`
 }
 
 type CardGroupBy struct {

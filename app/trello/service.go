@@ -97,6 +97,9 @@ func (s *service) Performance(id string) (app.Performance, error) {
 	}
 	perform.OnlineUsers = onlineUsers
 
+	userCard, err := s.trello.FindByUserCard(id)
+	perform.CardActivity = userCard
+
 	return perform, nil
 }
 
