@@ -25,6 +25,11 @@ export const SidebarDataAnalytics = [
     path: "/analytics",
     icon: <i className="far fa-circle nav-icon" />,
   },
+  {
+    title: "Trello",
+    path: "/analytics/trello",
+    icon: <i className="far fa-circle nav-icon" />,
+  },
 ];
 
 export const SidebarDataSettings = [

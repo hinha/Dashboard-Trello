@@ -9,11 +9,13 @@ import PageLoading from "./../../components/page-loading/PageLoading";
 import Home from "./../../pages/Home";
 import Attendence from "./../../pages/Attendence";
 import KMedoids from "../../pages/KMedoids";
+import TrelloBoard from "../../pages/TrelloBoard";
 import SettingsDetail from "../../pages/SettingsDetail";
 import SettingsUser from "../../pages/SettingsUser";
 
 import * as AuthService from "./../../services/profile";
 import * as DashboardService from "./../../services/dashboard";
+import * as AnalyticService from "./../../services/analytics";
 import * as SettingService from "./../../services/setting";
 import * as ActionTypes from "../../store/actions";
 
@@ -73,6 +75,8 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
     let data;
     if (item == "performance") {
       data = await DashboardService.getDashboard(token, getCredential);
+    } else if (item == AnalyticService.UPDATE_ANALYTIC_TRELLO) {
+      data = await AnalyticService.getTrelloCard(token, getCredential);
     } else if (item == SettingService.UPDATE_USER_SETTING) {
       data = await SettingService.getSettingUser(token, getCredential);
     } else if (item == SettingService.ADD_USER_SETTING) {
@@ -86,6 +90,7 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
     } else if (item == SettingService.TRELLO_USER_SETTING) {
       data = await SettingService.trelloSettingUser(token, getCredential, body);
     }
+
     return data;
   };
 
@@ -178,6 +183,21 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
                 <Route exact path="/analytics" component={KMedoids} key={key} />
               );
               break;
+            case "trello":
+              route = (
+                <Route
+                  exact
+                  path="/analytics/trello"
+                  render={(props) => (
+                    <TrelloBoard
+                      {...props}
+                      onClickSidebarApi={onClickSidebarApi}
+                    />
+                  )}
+                  key={key}
+                />
+              );
+              break;
           }
 
           if (route) {
@@ -198,7 +218,7 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
       <>
         <Header toggleMenuSidebar={toggleMenuSidebar} />
         <Sidebar />
-        <div className="content-wrapper">{Router}</div>
+        {Router}
         <Footer />
       </>
     );
