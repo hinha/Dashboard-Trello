@@ -191,56 +191,33 @@ const Home = ({ onClickSidebarApi }) => {
                   className="card-body"
                   style={{ maxHeight: "500px", overflowY: "auto" }}
                 >
-                  <div className="post">
-                    <div className="user-block">
-                      <img
-                        className="img-circle img-bordered-sm"
-                        src="../../dist/img/user1-128x128.jpg"
-                        alt="user image"
-                      />
-                      <span className="username">
-                        <a href="#">Jonathan Burke Jr.</a>
-                      </span>
-                      <span className="description">
-                        Shared publicly - 7:45 PM today
-                      </span>
-                    </div>
-                    <p>
-                      Lorem ipsum represents a long-held tradition for
-                      designers, typographers and the like. Some people hate it
-                      and argue for its demise, but others ignore.
-                    </p>
-                    <p>
-                      <a href="#" className="link-black text-sm">
-                        <i className="fas fa-link mr-1"></i> Demo File 1 v2
-                      </a>
-                    </p>
-                  </div>
-                  <div className="post">
-                    <div className="user-block">
-                      <img
-                        className="img-circle img-bordered-sm"
-                        src="../../dist/img/user1-128x128.jpg"
-                        alt="user image"
-                      />
-                      <span className="username">
-                        <a href="#">Jonathan Burke Jr.</a>
-                      </span>
-                      <span className="description">
-                        Shared publicly - 7:45 PM today
-                      </span>
-                    </div>
-                    <p>
-                      Lorem ipsum represents a long-held tradition for
-                      designers, typographers and the like. Some people hate it
-                      and argue for its demise, but others ignore.
-                    </p>
-                    <p>
-                      <a href="#" className="link-black text-sm">
-                        <i className="fas fa-link mr-1"></i> Demo File 1 v2
-                      </a>
-                    </p>
-                  </div>
+                  {statePerform.card_activity &&
+                    statePerform.card_activity.map((item, index) => {
+                      return (
+                        <>
+                          <div className="post" key={index}>
+                            <div className="user-block">
+                              <span className="username">
+                                {item.card_member_name}
+                              </span>
+                              <span className="description">
+                                {item.card_created_at}
+                              </span>
+                            </div>
+                            <p>{item.card_name}</p>
+                            <p>
+                              <a
+                                className="link-black text-sm"
+                                onClick={() => window.open(item.card_url)}
+                              >
+                                <i className="fas fa-link mr-1"></i>[
+                                {item.card_category}] See Detail
+                              </a>
+                            </p>
+                          </div>
+                        </>
+                      );
+                    })}
                 </div>
               </div>
             </div>
