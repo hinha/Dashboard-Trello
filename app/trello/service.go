@@ -11,6 +11,7 @@ type Service interface {
 	Authorize(key string) (interface{}, error)
 	Create(card *app.TrelloUserCard) error
 	Performance(id string) (app.Performance, error)
+	CardList() ([]app.TrelloUserCard, error)
 	TrelloList(id string) (app.TrelloItemList, error)
 	AddMember(id string, in app.TrelloAddMember) (*app.Trello, error)
 }
@@ -97,6 +98,10 @@ func (s *service) Performance(id string) (app.Performance, error) {
 	perform.OnlineUsers = onlineUsers
 
 	return perform, nil
+}
+
+func (s *service) CardList() ([]app.TrelloUserCard, error) {
+	return s.trello.ListCard()
 }
 
 func (s *service) TrelloList(id string) (app.TrelloItemList, error) {

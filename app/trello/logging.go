@@ -47,6 +47,18 @@ func (s *loggingService) TrelloList(id string) (o app.TrelloItemList, err error)
 	return s.next.TrelloList(id)
 }
 
+func (s *loggingService) CardList() (o []app.TrelloUserCard, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"took":   time.Since(begin),
+			"length": len(o),
+			"err":    err,
+		}).Info("TrelloList")
+	}(time.Now())
+
+	return s.next.CardList()
+}
+
 func (s *loggingService) AddMember(id string, in app.TrelloAddMember) (o *app.Trello, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{

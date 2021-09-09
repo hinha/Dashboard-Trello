@@ -32,10 +32,26 @@ func (h *apiDashboardHandler) performance(ctx echo.Context) error {
 
 	performance, err := h.trello.Performance(claim["id"].(string))
 	if err != nil {
-		return err
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, performance)
+}
+
+func (h *apiDashboardHandler) analyticTrelloCard(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+
+	cards, err := h.trello.CardList()
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": cards,
+	})
 }
 
 func (h *apiDashboardHandler) userSetting(ctx echo.Context) error {

@@ -95,6 +95,12 @@ func (r *trelloRepository) CategoryByDate(id string) ([]app.CardGroupBy, error) 
 	return unique(test), nil
 }
 
+func (r *trelloRepository) ListCard() ([]app.TrelloUserCard, error) {
+	var cards []app.TrelloUserCard
+	err := r.db.Find(&cards).Order("created_at desc").Error
+	return cards, err
+}
+
 func (r *trelloRepository) ListTrelloUser() ([]*app.Trello, error) {
 	var trello []*app.Trello
 	err := r.db.Table("trello").Find(&trello).Error

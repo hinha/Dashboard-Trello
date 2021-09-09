@@ -12,6 +12,7 @@ type TrelloRepository interface {
 	Store(in *TrelloUserCard) (*TrelloUserCard, error)
 	FindCardCategory(id string) ([]CardCategory, error)
 	CategoryByDate(id string) ([]CardGroupBy, error)
+	ListCard() ([]TrelloUserCard, error)
 	ListTrelloUser() ([]*Trello, error)
 	StoreUser(in TrelloAddMember) (TrelloAddMember, error)
 	FindMemberID(id string) (*Trello, error)
@@ -228,8 +229,8 @@ func (m *TrelloAddMember) Validate() bool {
 type CardCategoryType string
 
 const (
-	CardTypeTODO     CardCategoryType = "TO DO"
-	CardTypePROGRESS CardCategoryType = "ON PROGRESS"
+	CardTypeTODO     CardCategoryType = "TODO"
+	CardTypePROGRESS CardCategoryType = "ON_PROGRESS"
 	CardTypeDONE     CardCategoryType = "DONE"
 	CardTypeReview   CardCategoryType = "TESTING"
 )

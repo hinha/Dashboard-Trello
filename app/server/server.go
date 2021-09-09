@@ -84,6 +84,7 @@ func New(account accounts.Service, trello trello.Service, logger *log.Entry) *Se
 			dashboard := apiDashboardHandler{trello: s.Trello, account: s.Account, logger: s.Logger}
 			apiDashboard := api.Group("/dashboard", s.jwtConfigHeader(fallback), getToken, dashboard.verify)
 			apiDashboard.GET("/performance", dashboard.performance)
+			apiDashboard.GET("/analytic/trello", dashboard.analyticTrelloCard)
 			apiDashboard.GET("/settings/user", dashboard.userSetting)
 			apiDashboard.POST("/settings/user", dashboard.addUserSetting)
 			apiDashboard.PATCH("/settings/user", dashboard.updateUserSetting)

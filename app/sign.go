@@ -152,6 +152,7 @@ func (m *Accounts) ResourcePermission(role string) []string {
 			DashboardAttendance,
 			DashboardEmployee,
 			AnalyticsClustering,
+			TrelloBoard,
 			SettingDetail,
 			SettingUser,
 		}...)
@@ -160,6 +161,7 @@ func (m *Accounts) ResourcePermission(role string) []string {
 			DashboardPerformance,
 			DashboardAttendance,
 			AnalyticsClustering,
+			TrelloBoard,
 			SettingDetail,
 		}...)
 	default:
@@ -190,6 +192,7 @@ const (
 	AnalyticsClustering  = "analytics:clustering"
 	SettingDetail        = "user:detail"
 	SettingUser          = "user:manage"
+	TrelloBoard          = "trello:board"
 )
 
 var DeleteCookie = &http.Cookie{
