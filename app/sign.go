@@ -31,6 +31,7 @@ type Accounts struct {
 	LastLogin      time.Time     `json:"last_login" gorm:"not null;"`
 	Accounts       AccountDetail `json:"-" gorm:"ForeignKey:AccountID"`
 	Trello         Trello        `json:"-" gorm:"ForeignKey:AccountID"`
+	Attendance     []Attendance  `gorm:"foreignKey:AccountID"`
 }
 
 type LoginInput struct {

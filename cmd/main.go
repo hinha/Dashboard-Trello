@@ -77,7 +77,11 @@ func main() {
 			// TODO: Need refactor
 
 			// initiate authority
-			err := db.AutoMigrate(&app.Accounts{}, &app.AccountDetail{}, &app.Trello{}, &app.TrelloUserCard{})
+			err := db.AutoMigrate(&app.Accounts{},
+				&app.AccountDetail{},
+				&app.Trello{},
+				&app.TrelloUserCard{},
+				&app.Attendance{})
 			if err != nil {
 				logger.Fatal(err)
 			}
