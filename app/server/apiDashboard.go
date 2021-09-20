@@ -54,6 +54,63 @@ func (h *apiDashboardHandler) analyticTrelloCard(ctx echo.Context) error {
 	})
 }
 
+func (h *apiDashboardHandler) kMethodsTrelloCard(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+
+	year := ctx.QueryParam("year")
+	if strings.TrimSpace(year) == "" {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "param cannot be empty"})
+	}
+
+	cardOut, clusters, average, scatterPlot, err := h.trello.GetClusters(ctx.Request().Context(), year)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	var cardOutResponse interface{}
+	if cardOut == nil {
+		cardOutResponse = []string{}
+	} else {
+		cardOutResponse = cardOut
+	}
+
+	var clusterResponse interface{}
+	if clusters == nil {
+		clusterResponse = []string{}
+	} else {
+		clusterResponse = clusters
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"card":              cardOutResponse,
+		"cluster":           clusterResponse,
+		"average":           average,
+		"scatterClustering": scatterPlot,
+	})
+}
+
+func (h *apiDashboardHandler) kMethodsData(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+
+	year := ctx.QueryParam("year")
+	if strings.TrimSpace(year) == "" {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "param cannot be empty"})
+	}
+
+	performance, err := h.trello.GetTotalTrello(year)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, performance)
+}
+
 func (h *apiDashboardHandler) userSetting(ctx echo.Context) error {
 	verify := ctx.Get("verify")
 	if verify == nil {

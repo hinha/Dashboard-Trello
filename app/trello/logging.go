@@ -1,9 +1,12 @@
 package trello
 
 import (
-	"github.com/hinha/PAM-Trello/app"
+	"context"
 	"github.com/sirupsen/logrus"
 	"time"
+
+	"github.com/hinha/PAM-Trello/app"
+	pbTrello "github.com/hinha/PAM-Trello/app/pb/trello"
 )
 
 type loggingService struct {
@@ -81,6 +84,28 @@ func (s *loggingService) Authorize(key string) (o interface{}, err error) {
 	}(time.Now())
 
 	return s.next.Authorize(key)
+}
+
+func (s *loggingService) GetTotalTrello(paramYear string) (o app.Performance, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"took": time.Since(begin),
+			"err":  err,
+		}).Info("GetClusters")
+	}(time.Now())
+
+	return s.next.GetTotalTrello(paramYear)
+}
+
+func (s *loggingService) GetClusters(ctx context.Context, paramYear string) (o1 interface{}, o2 interface{}, o3 []*pbTrello.AverageCluster, o4 interface{}, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"took": time.Since(begin),
+			"err":  err,
+		}).Info("GetClusters")
+	}(time.Now())
+
+	return s.next.GetClusters(ctx, paramYear)
 }
 
 // NewLoggingService returns a new instance of a logging Service.
