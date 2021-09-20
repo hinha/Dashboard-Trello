@@ -28,10 +28,51 @@ func (r *trelloRepository) Store(in *app.TrelloUserCard) (*app.TrelloUserCard, e
 	}
 }
 
-func (r *trelloRepository) FindCardCategory(id string) ([]app.CardCategory, error) {
+func (r *trelloRepository) FindIDCardCategory(id string) ([]app.CardCategory, error) {
 	rows, err := r.db.Raw("select tc.card_category, count(tc.card_category) from trello_user_card tc, trello t "+
 		"where tc.card_member_id = t.card_member_id  and t.account_id = ? "+
 		"GROUP BY tc.card_category", id).Rows()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var cards []app.CardCategory
+
+	cards = append(cards, []app.CardCategory{
+		{
+			Label: string(app.CardTypeTODO),
+			Count: 0,
+		},
+		{
+			Label: string(app.CardTypePROGRESS),
+			Count: 0,
+		},
+		{
+			Label: string(app.CardTypeDONE),
+			Count: 0,
+		},
+		{
+			Label: string(app.CardTypeReview),
+			Count: 0,
+		},
+	}...)
+
+	for rows.Next() {
+		var card app.CardCategory
+		if err := rows.Scan(&card.Label, &card.Count); err != nil {
+			return nil, err
+		}
+
+		cards = append(cards, card)
+	}
+
+	return cards, nil
+}
+
+func (r *trelloRepository) FindCardCategoryYears(year string) ([]app.CardCategory, error) {
+	rows, err := r.db.Raw("select tc.card_category, count(tc.card_category) from trello_user_card tc "+
+		"where YEAR(tc.card_created_at) = ? GROUP BY tc.card_category", year).Rows()
 
 	if err != nil {
 		return nil, err
@@ -93,6 +134,36 @@ func (r *trelloRepository) CategoryByDate(id string) ([]app.CardGroupBy, error) 
 	}
 
 	return unique(test), nil
+}
+
+func (r *trelloRepository) FindCategoryByYears(year string) ([]app.CardGroupBy, error) {
+	rows, err := r.db.Raw("select tc.card_category, count(tc.card_member_id) as val, DATE(tc.card_created_at) as date "+
+		"from trello_user_card tc WHERE YEAR(tc.card_created_at) = ? group by tc.card_category, tc.card_created_at ORDER BY tc.card_created_at ASC", year).Rows()
+
+	if err != nil {
+		return nil, err
+	}
+	layoutDate := "2006-01-02"
+
+	var test []app.CardGroupBy
+	for rows.Next() {
+		var each app.CardGroupBy
+		var date time.Time
+
+		if err := rows.Scan(&each.Category, &each.Count, &date); err != nil {
+			return nil, err
+		}
+		each.Date = date.Format(layoutDate)
+		test = append(test, each)
+	}
+
+	return unique(test), nil
+}
+
+func (r *trelloRepository) CardFilterYear(year string) ([]app.TrelloUserCard, error) {
+	var cards []app.TrelloUserCard
+	err := r.db.Where("YEAR(card_created_at) = ?", year).Find(&cards).Error
+	return cards, err
 }
 
 func (r *trelloRepository) FindByUserCard(accountID string) ([]app.TrelloUserCard, error) {
