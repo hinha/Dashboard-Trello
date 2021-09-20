@@ -11,6 +11,7 @@
     "concurrently": "^3.4.0",
     "echarts": "^5.1.2",
     "echarts-for-react": "^3.0.1",
+    "echarts-stat": "^1.2.0",
     "formik": "2.2.8",
     "i18next": "20.3.1",
     "i18next-browser-languagedetector": "6.1.1",
@@ -21,6 +22,7 @@
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-bootstrap": "1.6.0",
+    "react-data-table-component": "^7.1.0",
     "react-dom": "^17.0.2",
     "react-i18next": "11.10.0",
     "react-moment": "^1.1.1",
@@ -32,6 +34,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
+    "styled-components": "^5.3.1",
     "web-vitals": "^1.0.1",
     "yup": "0.32.9"
   },
