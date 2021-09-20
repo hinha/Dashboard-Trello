@@ -87,7 +87,7 @@ func (h *trelloJobHandler) job(c *work.Job) error {
 
 func (h *trelloJobHandler) client() (pb.TrelloClient, error) {
 
-	portLine := fmt.Sprintf("%s:%s", "172.17.0.1", "50012")
+	portLine := fmt.Sprintf("%s:%s", os.Getenv("GRPC_HOST_TRELLO"), os.Getenv("GRPC_PORT_TRELLO"))
 	client, err := grpc.Dial(portLine,
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*10)),
 		grpc.WithInsecure())
