@@ -72,26 +72,43 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
   };
 
   const onClickSidebarApi = async (item, body = {}, params = "") => {
-    let data;
-    if (item == "performance") {
-      data = await DashboardService.getDashboard(token, getCredential);
-    } else if (item == AnalyticService.UPDATE_ANALYTIC_TRELLO) {
-      data = await AnalyticService.getTrelloCard(token, getCredential);
-    } else if (item == SettingService.UPDATE_USER_SETTING) {
-      data = await SettingService.getSettingUser(token, getCredential);
-    } else if (item == SettingService.ADD_USER_SETTING) {
-      data = await SettingService.addSettingUser(token, getCredential, body);
-    } else if (item == SettingService.EDIT_USER_SETTING) {
-      data = await SettingService.editSettingUser(token, getCredential, body);
-    } else if (item == SettingService.DEL_USER_SETTING) {
-      data = await SettingService.delSettingUser(token, getCredential, params);
-    } else if (item == SettingService.ROLE_USER_SETTING) {
-      data = await SettingService.roleSettingUser(token, getCredential, body);
-    } else if (item == SettingService.TRELLO_USER_SETTING) {
-      data = await SettingService.trelloSettingUser(token, getCredential, body);
-    }
+    try {
+      let data;
+      if (item == "performance") {
+        data = await DashboardService.getDashboard(token, getCredential);
+      } else if (item == AnalyticService.UPDATE_ANALYTIC_TRELLO) {
+        data = await AnalyticService.getTrelloCard(token, getCredential);
+      } else if (item == SettingService.UPDATE_USER_SETTING) {
+        data = await SettingService.getSettingUser(token, getCredential);
+      } else if (item == SettingService.ADD_USER_SETTING) {
+        data = await SettingService.addSettingUser(token, getCredential, body);
+      } else if (item == SettingService.EDIT_USER_SETTING) {
+        data = await SettingService.editSettingUser(token, getCredential, body);
+      } else if (item == SettingService.DEL_USER_SETTING) {
+        data = await SettingService.delSettingUser(
+          token,
+          getCredential,
+          params
+        );
+      } else if (item == SettingService.ROLE_USER_SETTING) {
+        data = await SettingService.roleSettingUser(token, getCredential, body);
+      } else if (item == SettingService.TRELLO_USER_SETTING) {
+        data = await SettingService.trelloSettingUser(
+          token,
+          getCredential,
+          body
+        );
+      }
 
-    return data;
+      return data;
+    } catch (error) {
+      // console.log(error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          onUserLogout();
+        }
+      }
+    }
   };
 
   document.getElementById("root").classList.remove("register-page");
