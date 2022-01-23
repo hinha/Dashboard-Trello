@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/hinha/PAM-Trello/app"
-	pbTrello "github.com/hinha/PAM-Trello/app/pb/trello"
 )
 
 type loggingService struct {
@@ -97,7 +96,7 @@ func (s *loggingService) GetTotalTrello(paramYear string) (o app.Performance, er
 	return s.next.GetTotalTrello(paramYear)
 }
 
-func (s *loggingService) GetClusters(ctx context.Context, paramYear string) (o1 interface{}, o2 interface{}, o3 []*pbTrello.AverageCluster, o4 interface{}, err error) {
+func (s *loggingService) GetClusters(ctx context.Context, paramYear string) (response app.ClusterResponse, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{
 			"took": time.Since(begin),

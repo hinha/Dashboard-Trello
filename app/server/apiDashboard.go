@@ -65,31 +65,12 @@ func (h *apiDashboardHandler) kMethodsTrelloCard(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "param cannot be empty"})
 	}
 
-	cardOut, clusters, average, scatterPlot, err := h.trello.GetClusters(ctx.Request().Context(), year)
+	cluster, err := h.trello.GetClusters(ctx.Request().Context(), year)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 	}
 
-	var cardOutResponse interface{}
-	if cardOut == nil {
-		cardOutResponse = []string{}
-	} else {
-		cardOutResponse = cardOut
-	}
-
-	var clusterResponse interface{}
-	if clusters == nil {
-		clusterResponse = []string{}
-	} else {
-		clusterResponse = clusters
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"card":              cardOutResponse,
-		"cluster":           clusterResponse,
-		"average":           average,
-		"scatterClustering": scatterPlot,
-	})
+	return ctx.JSON(http.StatusOK, cluster)
 }
 
 func (h *apiDashboardHandler) kMethodsData(ctx echo.Context) error {
@@ -313,6 +294,20 @@ func (h *apiDashboardHandler) trelloUserSetting(ctx echo.Context) error {
 		"message": "ok",
 		"data":    result,
 	})
+}
+
+func (h *apiDashboardHandler) accountDetail(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+	claim := verify.(map[string]interface{})
+	result, err := h.account.GetDetailAccount(ctx.Request().Context(), claim["id"].(string))
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, result)
 }
 
 func (h *apiDashboardHandler) verify(next echo.HandlerFunc) echo.HandlerFunc {

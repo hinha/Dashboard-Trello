@@ -20,7 +20,7 @@ type Service interface {
 	TrelloList(id string) (app.TrelloItemList, error)
 	AddMember(id string, in app.TrelloAddMember) (*app.Trello, error)
 	GetTotalTrello(paramYear string) (app.Performance, error)
-	GetClusters(ctx context.Context, paramYear string) (interface{}, interface{}, []*pbTrello.AverageCluster, interface{}, error)
+	GetClusters(ctx context.Context, paramYear string) (app.ClusterResponse, error)
 }
 
 type service struct {
@@ -174,11 +174,11 @@ func (s *service) GetTotalTrello(paramYear string) (app.Performance, error) {
 	return perform, nil
 }
 
-func (s *service) GetClusters(ctx context.Context, paramYear string) (interface{}, interface{}, []*pbTrello.AverageCluster, interface{}, error) {
+func (s *service) GetClusters(ctx context.Context, paramYear string) (app.ClusterResponse, error) {
 
-	cards, err := s.trello.CardFilterYear(paramYear)
+	cards, err := s.trello.ListCard()
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return app.ClusterResponse{}, err
 	}
 
 	var cardAnalyze []*pbTrello.CardAnalyze
@@ -205,25 +205,39 @@ func (s *service) GetClusters(ctx context.Context, paramYear string) (interface{
 	client := pb.NewGrpc(s.grpcHost, s.grpcPort)
 	clientService, err := pb.NewService(client.Conn).Analyze(ctx, &pbTrello.PamInput{Data: cardAnalyze})
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return app.ClusterResponse{}, err
 	}
 
 	var jsonCard interface{}
 	if err := json.Unmarshal(clientService.Card, &jsonCard); err != nil {
-		return nil, nil, nil, nil, err
+		return app.ClusterResponse{}, err
 	}
 
-	var jsonCluster interface{}
-	if err := json.Unmarshal(clientService.Clusters, &jsonCluster); err != nil {
-		return nil, nil, nil, nil, err
+	var jsonActivity interface{}
+	if err := json.Unmarshal(clientService.Activity, &jsonActivity); err != nil {
+		return app.ClusterResponse{}, err
 	}
 
-	var jsonClusterPlot interface{}
-	if err := json.Unmarshal(clientService.ScatterClustering, &jsonClusterPlot); err != nil {
-		return nil, nil, nil, nil, err
+	var jsonAveragePlot interface{}
+	if err := json.Unmarshal(clientService.AveragePlot, &jsonAveragePlot); err != nil {
+		return app.ClusterResponse{}, err
 	}
 
-	return jsonCard, jsonCluster, clientService.Average, jsonClusterPlot, nil
+	var jsonWeight interface{}
+	if err := json.Unmarshal(clientService.Weight, &jsonWeight); err != nil {
+		return app.ClusterResponse{}, err
+	}
+
+	response := app.ClusterResponse{
+		Card:              jsonCard,
+		AverageCluster:    clientService.AverageCluster,
+		ScatterClustering: clientService.ScatterClustering,
+		Activity:          jsonActivity,
+		AveragePlot:       jsonAveragePlot,
+		Weight:            jsonWeight,
+	}
+
+	return response, nil
 }
 
 func New(trello app.TrelloRepository, account app.AccountRepository) *service {

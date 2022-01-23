@@ -99,6 +99,7 @@ func main() {
 			db.Clauses(clause.OnConflict{DoNothing: true}).
 				Create(&app.Accounts{
 					ID:             UserID,
+					Name:           "Superuser",
 					Username:       "admin",
 					Password:       string(hashedPassword),
 					SecretPassword: appSecret,
@@ -110,35 +111,35 @@ func main() {
 				TablesPrefix: "authority_",
 				DB:           db,
 			})
-			auth.CreatePermission(app.PermReadWrite)
-			auth.CreatePermission(app.PermResetPassword)
-			auth.CreatePermission(app.PermListEmployee)
-			auth.CreatePermission(app.PermAttendance)
-			auth.CreatePermission(app.PermUserDetails)
+			_ = auth.CreatePermission(app.PermReadWrite)
+			_ = auth.CreatePermission(app.PermResetPassword)
+			_ = auth.CreatePermission(app.PermListEmployee)
+			_ = auth.CreatePermission(app.PermAttendance)
+			_ = auth.CreatePermission(app.PermUserDetails)
 
-			auth.CreateRole("admin")
-			auth.CreatePermission(app.PermUserGroup)
-			auth.CreatePermission(app.PermUserProperties)
-			auth.CreatePermission(app.PermUserManage)
-			auth.CreatePermission(app.PermUserUpdatePassword)
-			auth.CreatePermission(app.PermServiceRequest)
-			auth.AssignPermissions("admin", []string{
+			_ = auth.CreateRole("admin")
+			_ = auth.CreatePermission(app.PermUserGroup)
+			_ = auth.CreatePermission(app.PermUserProperties)
+			_ = auth.CreatePermission(app.PermUserManage)
+			_ = auth.CreatePermission(app.PermUserUpdatePassword)
+			_ = auth.CreatePermission(app.PermServiceRequest)
+			_ = auth.AssignPermissions("admin", []string{
 				app.PermUserGroup,
 				app.PermUserProperties,
 				app.PermUserManage,
 				app.PermUserUpdatePassword,
 				app.PermServiceRequest,
 			})
-			auth.AssignRole(UserID, "admin")
-			auth.CreateRole("developer")
-			auth.AssignPermissions("developer", []string{
+			_ = auth.AssignRole(UserID, "admin")
+			_ = auth.CreateRole("developer")
+			_ = auth.AssignPermissions("developer", []string{
 				app.PermReadWrite,
 				app.PermResetPassword,
 				app.PermAttendance,
 				app.PermUserDetails,
 			})
-			auth.CreateRole("c_level")
-			auth.AssignPermissions("c_level", []string{
+			_ = auth.CreateRole("c_level")
+			_ = auth.AssignPermissions("c_level", []string{
 				app.PermReadWrite,
 				app.PermResetPassword,
 				app.PermAttendance,

@@ -19,6 +19,7 @@ type Service interface {
 	UpdateAccount(ctx context.Context, adminId string, roleName string, account app.UpdateAccount) error
 	GetAccessList(ctx context.Context) (app.AccessControl, error)
 	NewAccessControlList(ctx context.Context, adminId string, roleAdmin string, control *app.AssignRole) error
+	GetDetailAccount(ctx context.Context, accountID string) (*app.AccountDetail, error)
 }
 
 type service struct {
@@ -112,8 +113,6 @@ func (s *service) UpdateAccount(ctx context.Context, adminId string, roleName st
 }
 
 func (s *service) GetAccessList(ctx context.Context) (app.AccessControl, error) {
-	// TODO: need filter by admin
-
 	control, err := s.account.AccessControlList()
 	if err != nil {
 		return control, err
@@ -154,6 +153,15 @@ func (s *service) GetProfile(ctx context.Context, id string) (*app.Accounts, []s
 		return account, nil, "", err
 	}
 	return account, account.ResourcePermission(role), secret, nil
+}
+
+func (s *service) GetDetailAccount(ctx context.Context, accountID string) (*app.AccountDetail, error) {
+	account, err := s.account.GetAccountDetail(ctx, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	return account, nil
 }
 
 func NewService(auth app.AuthRepository, account app.AccountRepository) *service {

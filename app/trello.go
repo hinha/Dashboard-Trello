@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	pbTrello "github.com/hinha/PAM-Trello/app/pb/trello"
 	"gorm.io/gorm"
 	"strings"
 	"time"
@@ -225,7 +226,7 @@ sampleLoop:
 }
 
 type TrelloAddMember struct {
-	BoardName string            `json:"board_name"`
+	BoardName string            `on:"board_name"`
 	MemberID  string            `json:"member_id"`
 	UserID    string            `json:"user_id"`
 	BoardID   string            `json:"board_id"`
@@ -255,3 +256,12 @@ const (
 	CardTypeDONE     CardCategoryType = "DONE"
 	CardTypeReview   CardCategoryType = "TESTING"
 )
+
+type ClusterResponse struct {
+	Card              interface{}                `json:"card"`
+	AverageCluster    []*pbTrello.AverageCluster `json:"average_cluster"`
+	ScatterClustering string                     `json:"scatter_clustering"`
+	Activity          interface{}                `json:"activity"`
+	AveragePlot       interface{}                `json:"average_plot"`
+	Weight            interface{}                `json:"weight"`
+}

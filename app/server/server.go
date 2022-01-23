@@ -91,6 +91,7 @@ func New(account accounts.Service, trello trello.Service, logger *log.Entry) *Se
 			apiDashboard.POST("/settings/user", dashboard.addUserSetting)
 			apiDashboard.PATCH("/settings/user", dashboard.updateUserSetting)
 			apiDashboard.DELETE("/settings/user", dashboard.deleteUserSetting)
+			apiDashboard.GET("/settings/detail", dashboard.accountDetail)
 
 			apiDashboard.POST("/settings/user/trello", dashboard.trelloUserSetting)
 			apiDashboard.POST("/settings/user/role", dashboard.assignRoleAccount)
