@@ -15,8 +15,12 @@ const Footer = () => {
       </div>
       <strong>
         <span>Copyright © {DateTime.now().toFormat("y")} </span>
-        <a href="https://hinha.com" target="_blank" rel="noopener noreferrer">
-          hinha.com
+        <a
+          href="https://kedata.online"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          kedata.online
         </a>
         <span>.</span>
       </strong>

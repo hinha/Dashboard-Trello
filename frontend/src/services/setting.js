@@ -83,9 +83,22 @@ export const trelloSettingUser = async (token, credentials, body) => {
   }
 };
 
+export const detailSettingUser = async (token, credentials) => {
+  try {
+    const result = await axios.get(
+      `${url}/settings/detail?key=${credentials}`,
+      authenticate(token)
+    );
+    return result.data;
+  } catch (e) {
+    return e.response.data;
+  }
+};
+
 export const UPDATE_USER_SETTING = "UPDATE_USER_SETTING";
 export const ADD_USER_SETTING = "ADD_USER_SETTING";
 export const DEL_USER_SETTING = "DELETE_USER_SETTING";
 export const EDIT_USER_SETTING = "EDIT_USER_SETTING";
 export const TRELLO_USER_SETTING = "TRELLO_USER_SETTING";
 export const ROLE_USER_SETTING = "ROLE_USER_SETTING";
+export const DETAIL_USER_SETTING = "DETAIL_USER_SETTING";

@@ -11,7 +11,7 @@ const KMedoids = () => {
     let mounted = true;
 
     if (mounted) {
-      console.log("mounted");
+      mounted = false;
     }
 
     return () => (mounted = false);
@@ -40,27 +40,6 @@ const KMedoids = () => {
         <div className="container-fluid">
           <ProgressData />
           <Clusters />
-
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card">
-                <div className="card-header">
-                  <h5 className="card-title">Hasil Analisis</h5>
-                  <div className="card-tools">
-                    <button
-                      type="button"
-                      className="btn btn-tool"
-                      data-card-widget="collapse"
-                    >
-                      <i className="fas fa-minus" />
-                    </button>
-                  </div>
-                </div>
-                {/* /.card-header */}
-                <div className="card-body">Bar Chart</div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </div>

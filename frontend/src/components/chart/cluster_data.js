@@ -8,8 +8,8 @@ export const ClusterColumn = [
   },
   {
     id: 2,
-    name: "Date",
-    selector: (row) => row.created_at,
+    name: "Month",
+    selector: (row) => row.time,
     sortable: true,
     reorder: true,
   },
@@ -22,16 +22,15 @@ export const ClusterColumn = [
   },
   {
     id: 4,
-    name: "Comment",
-    selector: (row) => row.comment,
+    name: "Active",
+    selector: (row) => row.active,
     sortable: true,
     right: true,
     reorder: true,
   },
   {
-    id: 5,
-    name: "Total",
-    selector: (row) => row.total,
+    name: "Year",
+    selector: (row) => row.years,
     sortable: true,
     right: true,
     reorder: true,
@@ -70,48 +69,16 @@ export const ClusterColumn = [
   },
   {
     id: 10,
-    name: "Cluster 5",
-    selector: (row) => row.cluster_5,
+    name: "Distance",
+    selector: (row) => row.distance,
     sortable: true,
     right: true,
     reorder: true,
   },
   {
     id: 11,
-    name: "Cluster 6",
-    selector: (row) => row.cluster_6,
-    sortable: true,
-    right: true,
-    reorder: true,
-  },
-  {
-    id: 12,
-    name: "Cluster 7",
-    selector: (row) => row.cluster_7,
-    sortable: true,
-    right: true,
-    reorder: true,
-  },
-  {
-    id: 13,
-    name: "Cluster 8",
-    selector: (row) => row.cluster_8,
-    sortable: true,
-    right: true,
-    reorder: true,
-  },
-  {
-    id: 14,
-    name: "Cluster 9",
-    selector: (row) => row.cluster_9,
-    sortable: true,
-    right: true,
-    reorder: true,
-  },
-  {
-    id: 15,
-    name: "Cluster 10",
-    selector: (row) => row.cluster_10,
+    name: "Structure",
+    selector: (row) => row.structure,
     sortable: true,
     right: true,
     reorder: true,
@@ -119,7 +86,6 @@ export const ClusterColumn = [
 ];
 
 export const ClusterCoefficient = (averageData = []) => {
-  console.log(averageData);
   let label = [];
   let data = [];
   averageData.forEach((item) => {
