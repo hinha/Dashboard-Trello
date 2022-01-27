@@ -54,6 +54,44 @@ func (h *apiDashboardHandler) analyticTrelloCard(ctx echo.Context) error {
 	})
 }
 
+func (h *apiDashboardHandler) kMethodsTrelloCard(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+
+	year := ctx.QueryParam("year")
+	if strings.TrimSpace(year) == "" {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "param cannot be empty"})
+	}
+
+	cluster, err := h.trello.GetClusters(ctx.Request().Context(), year)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, cluster)
+}
+
+func (h *apiDashboardHandler) kMethodsData(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+
+	year := ctx.QueryParam("year")
+	if strings.TrimSpace(year) == "" {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "param cannot be empty"})
+	}
+
+	performance, err := h.trello.GetTotalTrello(year)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, performance)
+}
+
 func (h *apiDashboardHandler) userSetting(ctx echo.Context) error {
 	verify := ctx.Get("verify")
 	if verify == nil {
@@ -256,6 +294,20 @@ func (h *apiDashboardHandler) trelloUserSetting(ctx echo.Context) error {
 		"message": "ok",
 		"data":    result,
 	})
+}
+
+func (h *apiDashboardHandler) accountDetail(ctx echo.Context) error {
+	verify := ctx.Get("verify")
+	if verify == nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+	}
+	claim := verify.(map[string]interface{})
+	result, err := h.account.GetDetailAccount(ctx.Request().Context(), claim["id"].(string))
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, result)
 }
 
 func (h *apiDashboardHandler) verify(next echo.HandlerFunc) echo.HandlerFunc {

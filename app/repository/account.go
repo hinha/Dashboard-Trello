@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"time"
@@ -103,6 +104,12 @@ func (r *accountRepository) CheckRole(adminID string, roleName string) error {
 
 func (r *accountRepository) DeleteAccount(id string, username string) error {
 	return r.db.Where("id = ? and username = ?", id, username).Delete(app.Accounts{}).Error
+}
+
+func (r *accountRepository) GetAccountDetail(ctx context.Context, accountID string) (*app.AccountDetail, error) {
+	account := new(app.AccountDetail)
+	err := r.db.WithContext(ctx).Model(account).Where("account_id = ?", accountID).Take(account).Error
+	return account, err
 }
 
 func (r accountRepository) GivenPermission(userId string, roleName, permName string) error {

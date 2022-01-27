@@ -15,12 +15,12 @@ function Sidebar({ user, arn }) {
       {/* Brand Logo */}
       <Link to="/" className="brand-link">
         <img
-          src="../dist/img/AdminLTELogo.png"
-          alt="AdminLTE Logo"
+          src="../dist/img/kedata-logo.svg"
+          alt="Kedata Logo"
           className="brand-image img-circle elevation-3"
-          style={{ opacity: ".8" }}
+          style={{ opacity: ".8", marginTop: 0 }}
         />
-        <span className="brand-text font-weight-light">AdminLTE 3</span>
+        <span className="brand-text font-weight-light">Kedata</span>
       </Link>
       {/* Sidebar */}
       <div className="sidebar">

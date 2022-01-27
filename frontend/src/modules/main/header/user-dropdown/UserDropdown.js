@@ -34,7 +34,7 @@ const UserDropdown = ({ user, onUserLogout }) => {
     event.preventDefault();
     // TODO: Need call logout api
     onUserLogout();
-    history.push("/login");
+    history.push("/");
   };
 
   useEffect(() => {
@@ -63,7 +63,6 @@ const UserDropdown = ({ user, onUserLogout }) => {
           className="user-image img-circle elevation-2"
           alt="User"
         />
-        {/* <span className="d-none d-md-inline">{email}</span> */}
       </a>
       <ul className={className}>
         <li className="user-header bg-primary">
@@ -77,27 +76,15 @@ const UserDropdown = ({ user, onUserLogout }) => {
             <small>
               <span>Member since </span>
               <span>
-                {DateTime.fromISO(user.createdAt).toFormat("dd LLL yyyy")}
+                {DateTime.fromISO(user.createdAt).toFormat("dd mm yyyy")}
               </span>
             </small>
           </p>
         </li>
-        <li className="user-body">
-          <div className="row">
-            <div className="col-4 text-center">
-              <Link to="/">{t("header.user.followers")}</Link>
-            </div>
-            <div className="col-4 text-center">
-              <Link to="/">{t("header.user.sales")}</Link>
-            </div>
-            <div className="col-4 text-center">
-              <Link to="/">{t("header.user.friends")}</Link>
-            </div>
-          </div>
-        </li>
+
         <li className="user-footer">
           <Link
-            to="/profile"
+            to="/settings"
             onClick={toggleDropdown}
             className="btn btn-default btn-flat"
           >

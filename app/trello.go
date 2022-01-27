@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	pbTrello "github.com/hinha/PAM-Trello/app/pb/trello"
 	"gorm.io/gorm"
 	"strings"
 	"time"
@@ -10,8 +11,11 @@ import (
 
 type TrelloRepository interface {
 	Store(in *TrelloUserCard) (*TrelloUserCard, error)
-	FindCardCategory(id string) ([]CardCategory, error)
+	FindIDCardCategory(id string) ([]CardCategory, error)
 	CategoryByDate(id string) ([]CardGroupBy, error)
+	FindCardCategoryYears(year string) ([]CardCategory, error)
+	FindCategoryByYears(year string) ([]CardGroupBy, error)
+	CardFilterYear(year string) ([]TrelloUserCard, error)
 	FindByUserCard(accountID string) ([]TrelloUserCard, error)
 	ListCard() ([]TrelloUserCard, error)
 	ListTrelloUser() ([]*Trello, error)
@@ -205,8 +209,24 @@ func (m *Performance) removeDuplicateStr(strSlice []string) []string {
 	return list
 }
 
+func (m *Performance) CategoryDuplicate(category []CardCategory) []CardCategory {
+	var unique []CardCategory
+
+sampleLoop:
+	for _, v := range category {
+		for i, u := range unique {
+			if v.Label == u.Label {
+				unique[i] = v
+				continue sampleLoop
+			}
+		}
+		unique = append(unique, v)
+	}
+	return unique
+}
+
 type TrelloAddMember struct {
-	BoardName string            `json:"board_name"`
+	BoardName string            `on:"board_name"`
 	MemberID  string            `json:"member_id"`
 	UserID    string            `json:"user_id"`
 	BoardID   string            `json:"board_id"`
@@ -236,3 +256,12 @@ const (
 	CardTypeDONE     CardCategoryType = "DONE"
 	CardTypeReview   CardCategoryType = "TESTING"
 )
+
+type ClusterResponse struct {
+	Card              interface{}                `json:"card"`
+	AverageCluster    []*pbTrello.AverageCluster `json:"average_cluster"`
+	ScatterClustering string                     `json:"scatter_clustering"`
+	Activity          interface{}                `json:"activity"`
+	AveragePlot       interface{}                `json:"average_plot"`
+	Weight            interface{}                `json:"weight"`
+}

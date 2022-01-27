@@ -17,7 +17,7 @@ import (
 
 	"github.com/hinha/PAM-Trello/app"
 	"github.com/hinha/PAM-Trello/app/accounts"
-	"github.com/hinha/PAM-Trello/app/handling"
+	//"github.com/hinha/PAM-Trello/app/handling"
 )
 
 type accountHandler struct {
@@ -219,8 +219,8 @@ func (h *accountHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 type dashboardHandler struct {
-	s      accounts.Service
-	socket handling.ServiceInbox
+	s accounts.Service
+	//socket handling.ServiceInbox
 
 	hub    *Hub
 	logger *log.Entry
@@ -301,25 +301,25 @@ func (h *dashboardHandler) restricted(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func (h *dashboardHandler) inboxSocket(ctx echo.Context) error {
-
-	verify := ctx.Get("verify")
-	if verify == nil {
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
-	}
-
-	// Upgrading the HTTP connection socket connection
-	connection, err := upgraded.Upgrade(ctx.Response(), ctx.Request(), nil)
-	if err != nil {
-		h.logger.Error(err)
-		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
-	}
-	claim := verify.(map[string]interface{})
-
-	h.socket.CreateNewSocketUser(connection, claim["id"].(string), claim["role"].(string))
-
-	return nil
-}
+//func (h *dashboardHandler) inboxSocket(ctx echo.Context) error {
+//
+//	verify := ctx.Get("verify")
+//	if verify == nil {
+//		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "bad payload"})
+//	}
+//
+//	// Upgrading the HTTP connection socket connection
+//	connection, err := upgraded.Upgrade(ctx.Response(), ctx.Request(), nil)
+//	if err != nil {
+//		h.logger.Error(err)
+//		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+//	}
+//	claim := verify.(map[string]interface{})
+//
+//	//h.socket.CreateNewSocketUser(connection, claim["id"].(string), claim["role"].(string))
+//
+//	return nil
+//}
 
 func (h *dashboardHandler) settingDetails(ctx echo.Context) error {
 	data := &app.DashboardContent{

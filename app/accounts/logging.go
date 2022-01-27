@@ -12,6 +12,19 @@ type loggingService struct {
 	next   Service
 }
 
+func (s *loggingService) GetDetailAccount(ctx context.Context, accountID string) (o *app.AccountDetail, err error) {
+	defer func(begin time.Time) {
+		s.logger.WithFields(logrus.Fields{
+			"method":     "detail_account",
+			"took":       time.Since(begin),
+			"account_id": accountID,
+			"err":        err,
+		}).Info("GetDetailAccount")
+	}(time.Now())
+
+	return s.next.GetDetailAccount(ctx, accountID)
+}
+
 func (s *loggingService) Authorize(key string) (o interface{}, err error) {
 	defer func(begin time.Time) {
 		s.logger.WithFields(logrus.Fields{

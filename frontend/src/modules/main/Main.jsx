@@ -7,7 +7,7 @@ import Header from "./header/Header";
 import Sidebar from "./../../components/layout/Sidebar";
 import PageLoading from "./../../components/page-loading/PageLoading";
 import Home from "./../../pages/Home";
-import Attendence from "./../../pages/Attendence";
+// import Attendence from "./../../pages/Attendence";
 import KMedoids from "../../pages/KMedoids";
 import TrelloBoard from "../../pages/TrelloBoard";
 import SettingsDetail from "../../pages/SettingsDetail";
@@ -72,26 +72,45 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
   };
 
   const onClickSidebarApi = async (item, body = {}, params = "") => {
-    let data;
-    if (item == "performance") {
-      data = await DashboardService.getDashboard(token, getCredential);
-    } else if (item == AnalyticService.UPDATE_ANALYTIC_TRELLO) {
-      data = await AnalyticService.getTrelloCard(token, getCredential);
-    } else if (item == SettingService.UPDATE_USER_SETTING) {
-      data = await SettingService.getSettingUser(token, getCredential);
-    } else if (item == SettingService.ADD_USER_SETTING) {
-      data = await SettingService.addSettingUser(token, getCredential, body);
-    } else if (item == SettingService.EDIT_USER_SETTING) {
-      data = await SettingService.editSettingUser(token, getCredential, body);
-    } else if (item == SettingService.DEL_USER_SETTING) {
-      data = await SettingService.delSettingUser(token, getCredential, params);
-    } else if (item == SettingService.ROLE_USER_SETTING) {
-      data = await SettingService.roleSettingUser(token, getCredential, body);
-    } else if (item == SettingService.TRELLO_USER_SETTING) {
-      data = await SettingService.trelloSettingUser(token, getCredential, body);
-    }
+    try {
+      let data;
+      if (item == "performance") {
+        data = await DashboardService.getDashboard(token, getCredential);
+      } else if (item == AnalyticService.UPDATE_ANALYTIC_TRELLO) {
+        data = await AnalyticService.getTrelloCard(token, getCredential);
+      } else if (item == SettingService.UPDATE_USER_SETTING) {
+        data = await SettingService.getSettingUser(token, getCredential);
+      } else if (item == SettingService.ADD_USER_SETTING) {
+        data = await SettingService.addSettingUser(token, getCredential, body);
+      } else if (item == SettingService.EDIT_USER_SETTING) {
+        data = await SettingService.editSettingUser(token, getCredential, body);
+      } else if (item == SettingService.DEL_USER_SETTING) {
+        data = await SettingService.delSettingUser(
+          token,
+          getCredential,
+          params
+        );
+      } else if (item == SettingService.ROLE_USER_SETTING) {
+        data = await SettingService.roleSettingUser(token, getCredential, body);
+      } else if (item == SettingService.TRELLO_USER_SETTING) {
+        data = await SettingService.trelloSettingUser(
+          token,
+          getCredential,
+          body
+        );
+      } else if (item == SettingService.DETAIL_USER_SETTING) {
+        data = await SettingService.detailSettingUser(token, getCredential);
+      }
 
-    return data;
+      return data;
+    } catch (error) {
+      // console.log(error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          onUserLogout();
+        }
+      }
+    }
   };
 
   document.getElementById("root").classList.remove("register-page");
@@ -129,27 +148,6 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
                     key={key}
                   />
                 );
-              } else if (menu[1] === "attendance") {
-                route = (
-                  <Route
-                    exact
-                    path="/dashboard/attendence"
-                    render={(props) => (
-                      <Attendence
-                        {...props}
-                        onClickSidebarApi={onClickSidebarApi}
-                      />
-                    )}
-                    key={key}
-                  />
-                );
-              } else {
-                <Route
-                  exact
-                  path="/dashboard/employee"
-                  component={Attendence}
-                  key={key}
-                />;
               }
               break;
             case "user":
@@ -158,7 +156,12 @@ const Main = ({ token, onCredential, onUserLoad, onArn, onUserLogout }) => {
                   <Route
                     exact
                     path="/settings"
-                    component={SettingsDetail}
+                    render={(props) => (
+                      <SettingsDetail
+                        {...props}
+                        onClickSidebarApi={onClickSidebarApi}
+                      />
+                    )}
                     key={key}
                   />
                 );

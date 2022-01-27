@@ -39,7 +39,7 @@ const Home = ({ onClickSidebarApi }) => {
                 <li className="breadcrumb-item">
                   <Link to="/dashboard">Home</Link>
                 </li>
-                <li className="breadcrumb-item active">Starter Page</li>
+                <li className="breadcrumb-item active">Dashboard</li>
               </ol>
             </div>
           </div>
@@ -249,7 +249,6 @@ const Home = ({ onClickSidebarApi }) => {
                         <thead>
                           <tr>
                             <th>Name</th>
-                            <th>Title</th>
                             <th>Last active</th>
                           </tr>
                         </thead>
@@ -260,7 +259,6 @@ const Home = ({ onClickSidebarApi }) => {
                               return (
                                 <tr key={index}>
                                   <td>{item.name}</td>
-                                  <td>title</td>
                                   <td>
                                     <Moment fromNow>{item.last_active}</Moment>
                                   </td>

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
@@ -12,6 +13,7 @@ type AccountRepository interface {
 	FindUsername(username string) (*Accounts, error)
 	FindID(id string) (*Accounts, error)
 	GetAccount(adminID string, roleName string) ([]Accounts, error)
+	GetAccountDetail(ctx context.Context, accountID string) (*AccountDetail, error)
 	DeleteAccount(id string, username string) error
 	CheckRole(adminID string, roleName string) error
 	GivenPermission(userId string, roleName string, permName string) error
@@ -32,6 +34,10 @@ type AccountDetail struct {
 	StartContract time.Time `json:"start_contract" gorm:"not null;"`
 	EndContract   time.Time `json:"end_contract" gorm:"not null;"`
 	AccountID     string    `json:"-" gorm:"type:varchar(50)"`
+}
+
+func (AccountDetail) TableName() string {
+	return "account_details"
 }
 
 type RegisterInput struct {

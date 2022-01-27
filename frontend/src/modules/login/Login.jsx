@@ -76,8 +76,11 @@ const Login = ({ onUserLogin }) => {
       <div className="card card-outline card-primary">
         <div className="card-header text-center">
           <Link to="/" className="h1">
-            <b>Admin</b>
-            <span>LTE</span>
+            <img
+              src="../dist/img/kedata.png"
+              alt="Kedata Logo"
+              style={{ opacity: ".8" }}
+            />
           </Link>
         </div>
         <div className="card-body">

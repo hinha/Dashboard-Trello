@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hinha/PAM-Trello/app/accounts"
@@ -30,6 +31,9 @@ func (h *apiAccountHandler) loginPerform(ctx echo.Context) error {
 		Token:    ctx.Request().PostFormValue("csrf"),
 	}
 	checkbox := ctx.Request().PostFormValue("remember")
+	if strings.TrimSpace(checkbox) == "" {
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "request failed"})
+	}
 
 	remeberMe, err := strconv.ParseBool(checkbox)
 	if err != nil {

@@ -7,6 +7,7 @@ require (
 	github.com/go-echarts/go-echarts/v2 v2.2.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gocraft/work v0.5.1
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gomodule/redigo v1.8.5
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2

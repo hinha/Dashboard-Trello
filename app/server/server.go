@@ -39,20 +39,20 @@ func New(account accounts.Service, trello trello.Service, logger *log.Entry) *Se
 	}
 
 	r := echo.New()
-	echo.NotFoundHandler = func(c echo.Context) error {
-		return c.Render(http.StatusNotFound, "404.html", nil)
-	}
-	r.HTTPErrorHandler = func(err error, c echo.Context) {
-		code := http.StatusInternalServerError
-		if he, ok := err.(*echo.HTTPError); ok {
-			code = he.Code
-		}
-		errorPage := fmt.Sprintf("%d.html", code)
-		if err := c.File(errorPage); err != nil {
-			c.Logger().Error(err)
-		}
-		c.Logger().Error(err)
-	}
+	//echo.NotFoundHandler = func(c echo.Context) error {
+	//	return c.Render(http.StatusNotFound, "404.html", nil)
+	//}
+	//r.HTTPErrorHandler = func(err error, c echo.Context) {
+	//	code := http.StatusInternalServerError
+	//	if he, ok := err.(*echo.HTTPError); ok {
+	//		code = he.Code
+	//	}
+	//	errorPage := fmt.Sprintf("%d.html", code)
+	//	if err := c.File(errorPage); err != nil {
+	//		c.Logger().Error(err)
+	//	}
+	//	c.Logger().Error(err)
+	//}
 	csrfForm := middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "form:csrf",
 	})
@@ -66,8 +66,8 @@ func New(account accounts.Service, trello trello.Service, logger *log.Entry) *Se
 		CookieSameSite: http.SameSiteDefaultMode,
 	})
 
-	r.Static("/", "static")
-	r.Renderer = templateRenderer("templates/*.html", true)
+	//r.Static("/", "static")
+	//r.Renderer = templateRenderer("templates/*.html", true)
 	{
 		{
 			account := apiAccountHandler{s: s.Account, logger: s.Logger}
@@ -85,10 +85,13 @@ func New(account accounts.Service, trello trello.Service, logger *log.Entry) *Se
 			apiDashboard := api.Group("/dashboard", s.jwtConfigHeader(fallback), getToken, dashboard.verify)
 			apiDashboard.GET("/performance", dashboard.performance)
 			apiDashboard.GET("/analytic/trello", dashboard.analyticTrelloCard)
+			apiDashboard.GET("/analytic/trello/data", dashboard.kMethodsData)
+			apiDashboard.GET("/analytic/trello/clusters", dashboard.kMethodsTrelloCard)
 			apiDashboard.GET("/settings/user", dashboard.userSetting)
 			apiDashboard.POST("/settings/user", dashboard.addUserSetting)
 			apiDashboard.PATCH("/settings/user", dashboard.updateUserSetting)
 			apiDashboard.DELETE("/settings/user", dashboard.deleteUserSetting)
+			apiDashboard.GET("/settings/detail", dashboard.accountDetail)
 
 			apiDashboard.POST("/settings/user/trello", dashboard.trelloUserSetting)
 			apiDashboard.POST("/settings/user/role", dashboard.assignRoleAccount)

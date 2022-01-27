@@ -1,0 +1,169 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Account Management RESTFull API",
+    "version": "1.0",
+    "description": "",
+    "contact": {
+      "name": "Martinus",
+      "email": "martinuz.dawan9@gmail.com",
+      "url": "-"
+    },
+    "license": {
+      "name": "APACHE 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "servers": [
+    {
+      "description": "Account Management Restfull API local server",
+      "url": "http://localhost:8080/api"
+    },
+    {
+      "description": "Account Management Restfull API server",
+      "url": "https://sub.domain.com/api"
+    }
+  ],
+  "paths": {
+    "/accounts/login": {
+      "post": {
+        "summary": "Accessing dashboard",
+        "operationId": "1.1.login",
+        "parameters": [
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "myUsername"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "myPassword"
+                  },
+                  "remember": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/responseAuthenticationLogin"
+                },
+                "examples": {
+                  "application/json": {
+                    "$ref": "#/components/schemas/responseAuthenticationLogin"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/data": {
+      "get": {
+        "summary": "Get credential accounts",
+        "operationId": "1.2.data",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer token from login",
+            "schema": {
+              "type": "string",
+              "default": "Bearer Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/responseAccountCredential"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "responseAuthenticationLogin": {
+        "title": "response",
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "responseAccountCredential": {
+        "title": "response",
+        "type": "object",
+        "properties": {
+          "arn": {
+            "type": "array",
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "credentials": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "arn",
+          "credentials",
+          "name",
+          "username"
+        ]
+      }
+    }
+  }
+}
+
